@@ -12,7 +12,7 @@ import re
 import json
 
 DFLT_LRU_CACHE_SIZE = 20
-DFLT_RESULT_FIELD = 'result'
+DFLT_RESULT_FIELD = '_result'
 
 
 ########################################################################################################################
@@ -42,19 +42,30 @@ class ObjWrapper(object):
             'type': a function (typically int, float, bool, and list) that will convert the value of the variable
                 to make it web service compliant
             'default': A value to assign to the variable if it's missing.
-        :param The pattern that determines what attributes are allowed to be accessed. Note that patterns must be
+        :param permissible_attr_pattern:
+            The pattern that determines what attributes are allowed to be accessed. Note that patterns must be
             complete patterns (i.e. describing the whole attribute path, not just a subset. For example, if you want
             to have access to this.given.thing you, specifying r"this\.given" won't be enough. You need to specify
             "this\.given.thing" or "this\.given\..*" (the latter giving access to all children of this.given.).
             Allowed formats:
                 a re.compiled pattern
                 a string (that will be passed on to re.compile()
+                a list of patterns to include
                 a dict with either
-                    an "exclude", pointing to a list of patterns to exclude
                     an "include", pointing to a list of patterns to include
+                    an "exclude", pointing to a list of patterns to exclude
+
         :param to_jdict: (input processing) Function to convert an output to a jsonizable dict
+        :param obj_str: name of object to use in error messages
+        :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
+            be LRU-cached.
         """
-        self.obj_constructor = lru_cache(cache_size=cache_size)(obj_constructor)
+        if isinstance(cache_size, int) and cache_size != 1:
+            self.obj_constructor = lru_cache(cache_size=cache_size)(obj_constructor)
+        elif cache_size is None or cache_size == 1:
+            self.obj_constructor = obj_constructor
+        else:
+            raise ValueError("cache_size must be an int or None")
 
         if obj_constructor_arg_names is None:
             obj_constructor_arg_names = []
@@ -67,6 +78,8 @@ class ObjWrapper(object):
         self.convert_arg = convert_arg  # a specification of how to convert specific argument names or types
         self.file_var = file_var
 
+        if isinstance(permissible_attr_pattern, (list, tuple)):
+            permissible_attr_pattern = {'include': permissible_attr_pattern}
         if isinstance(permissible_attr_pattern, dict):
             self.permissible_attr_pattern = get_pattern_from_attr_permissions_dict(permissible_attr_pattern)
         else:
