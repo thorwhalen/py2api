@@ -23,11 +23,11 @@ class ObjWrapper(object):
     def __init__(self,
                  obj_constructor,
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-                 in_proc=None,  # input processing: Dict specifying how to prepare ws arguments for methods
+                 input_trans=None,  # input processing: Dict specifying how to prepare ws arguments for methods
                  # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
                  file_var='file',  # input processing: name of the variable to use if there's a 'file' in request.files
                  permissible_attr_pattern='[^_].*',  # what attributes are allowed to be accessed
-                 out_proc=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
+                 output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
                  obj_str='obj',  # name of object to use in error messages
                  cache_size=DFLT_LRU_CACHE_SIZE,
                  debug=0):
@@ -39,7 +39,7 @@ class ObjWrapper(object):
         :param obj_constructor: a function that, given some arguments, constructs an object. It is this object
             that will be wrapped for the webservice
         :param obj_constructor_arg_names:
-        :param in_proc: (processing) a dict keyed by variable names (str) and valued by a dict containing a
+        :param input_trans: (processing) a dict keyed by variable names (str) and valued by a dict containing a
             'type': a function (typically int, float, bool, and list) that will convert the value of the variable
                 to make it web service compliant
             'default': A value to assign to the variable if it's missing.
@@ -56,7 +56,7 @@ class ObjWrapper(object):
                     an "include", pointing to a list of patterns to include
                     an "exclude", pointing to a list of patterns to exclude
 
-        :param out_proc: (input processing) Function to convert an output to a jsonizable dict
+        :param output_trans: (input processing) Function to convert an output to a jsonizable dict
         :param obj_str: name of object to use in error messages
         :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
             be LRU-cached.
@@ -74,9 +74,9 @@ class ObjWrapper(object):
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
-        if in_proc is None:
-            in_proc = {}
-        self.in_proc = in_proc  # a specification of how to convert specific argument names or types
+        if input_trans is None:
+            input_trans = {}
+        self.input_trans = input_trans  # a specification of how to convert specific argument names or types
         self.file_var = file_var
 
         if isinstance(permissible_attr_pattern, (list, tuple)):
@@ -85,7 +85,7 @@ class ObjWrapper(object):
             self.permissible_attr_pattern = get_pattern_from_attr_permissions_dict(permissible_attr_pattern)
         else:
             self.permissible_attr_pattern = re.compile(permissible_attr_pattern)
-        self.out_proc = out_proc
+        self.output_trans = output_trans
         self.obj_str = obj_str
         self.debug = debug
 
@@ -97,7 +97,7 @@ class ObjWrapper(object):
         :param request: the flask request object
         :return: a dict of kwargs corresponding to the union of post and get arguments
         """
-        kwargs = extract_kwargs(request, convert_arg=self.in_proc, file_var=self.file_var)
+        kwargs = extract_kwargs(request, convert_arg=self.input_trans, file_var=self.file_var)
 
         return dict(kwargs)
 
@@ -159,9 +159,9 @@ class ObjWrapper(object):
 
         # call a method or return a property
         if callable(obj):
-            return self.out_proc(obj(**kwargs))
+            return self.output_trans(obj(**kwargs))
         else:
-            return self.out_proc(obj)
+            return self.output_trans(obj)
 
 
 ########################################################################################################################
