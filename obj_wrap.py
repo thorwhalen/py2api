@@ -8,20 +8,30 @@ Many useful utils to extend it's functionality are included elsewhere so as to e
 minimum-necessary code, crucial, for instance, for micro-services.
 """
 
-import re
-
-from errors import ForbiddenAttribute, MissingAttribute
+from py2api.errors import MissingAttribute, ForbiddenAttribute
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api.lru import lru_cache
 from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively
+
+
+########################################################################################################################
+# Dev Notes
+"""
+(1) Might want to change all "reserved" strings (such as attr (see ATTR), result (see DFLT_RESULT_FIELD),
+and file (see py2web constant FILE_FIELD) to be prefixed by an underscore,
+so as to have extra protection against collision.
+
+
+"""
+########################################################################################################################
 
 
 class ObjWrap(object):
     def __init__(self,
                  obj_constructor,
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-                 input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
                  permissible_attr=None,
+                 input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
                  output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
                  cache_size=DFLT_LRU_CACHE_SIZE,
                  debug=0):
@@ -42,12 +52,12 @@ class ObjWrap(object):
         :param obj_constructor: a function that, given some arguments, constructs an object. It is this object
             that will be wrapped for the webservice
         :param obj_constructor_arg_names:
+        :param permissible_attr: a boolean function that specifies whether an attr is allowed to be accessed
+            Usually constructed using PermissibleAttr class.
         :param input_trans: (processing) a dict keyed by variable names (str) and valued by a dict containing a
             'type': a function (typically int, float, bool, and list) that will convert the value of the variable
                 to make it web service compliant
             'default': A value to assign to the variable if it's missing.
-        :param permissible_attr: a boolean function that specifies whether an attr is allowed to be accessed
-            Usually constructed using PermissibleAttr class.
         :param output_trans: (input processing) Function to convert an output to a jsonizable dict
         :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
             be LRU-cached.
@@ -65,8 +75,6 @@ class ObjWrap(object):
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
-        if input_trans is None:
-            input_trans = {}
         self.input_trans = input_trans  # a specification of how to convert specific argument names or types
 
         # if permissible_attr is None:
@@ -78,19 +86,28 @@ class ObjWrap(object):
         self.output_trans = output_trans
         self.debug = debug
 
-    def get_kwargs_from_request(self, request):
+    def extract_attr(self, request):
         """
-        Translate the request object into a dict.
-        :param request: the flask request object or the args of a script call
-        :return: a dict of kwargs corresponding to the union of post and get arguments
+        Takes a request object and returns an attribute and a request (possibly transformed).
+        It is used in the beginning of the robj method to figure out what to do from there.
+        :param request: A request object. In the case of WebObjWrap, it's a Request object,
+        in the case of ScriptObjWrap it's the args string.
+        :return: attr, request
         """
-        raise NotImplementedError("You're in an interface class. This method needs to be implemented. "
-                                  "See WebObjectWrapper for example.")
+        raise NotImplementedError("Need to implement this method for the ObjWrap to work!")
 
-    def obj(self, obj, attr=None):
-
-        if attr is None:
-            raise MissingAttribute()
+    def obj(self, obj, attr):
+        """
+        Method takes care of:
+            Constructing a root object (or returning it from the LRU cache if it's already there)
+            Giving access to an attribute of that root object.
+        Does not take care of allowing or disallowing access to an attribute: robj takes care of that.
+        :param obj:
+        :param attr:
+        :return:
+        """
+        # if attr is None:
+        #     raise MissingAttribute()
 
         # get or make the root object
         if isinstance(obj, dict):
@@ -109,8 +126,7 @@ class ObjWrap(object):
     def robj(self, request):
         """
         Translates a request to an object access (get property value or call object method).
-            Uses self._get_kwargs_from_request(request) to get a dict of kwargs from request.arg
-        (with self.convert_arg conversions)
+            Uses self.get_kwargs_from_request(request) to get a dict of kwargs from request.arg
         and request.json.
             The object to be constructed (or retrieved from cache) is determined by the self.obj_constructor_arg_names
         list. The names listed there will be extracted from the request kwargs and passed on to the object constructor
@@ -123,22 +139,26 @@ class ObjWrap(object):
         :param request: A flask request or args (for scripts)
         :return: The value of an object's property, or the output of a method.
         """
-        kwargs = self.get_kwargs_from_request(request)
-        if self.debug:
-            print("robj: kwargs = {}".format(kwargs))
-        obj_kwargs = {k: kwargs.pop(k) for k in self.obj_constructor_arg_names if k in kwargs}
-
-        attr = kwargs.pop('attr', None)
+        attr = self.extract_attr(request)
         if attr is None:
             raise MissingAttribute()
         elif not self.permissible_attr(attr):
             raise ForbiddenAttribute(attr)
+
+        input_dict = self.input_trans(attr, request)
+
         if self.debug:
-            print("robj: attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, kwargs))
+            print("robj: kwargs = {}".format(input_dict))
+
+        obj_kwargs = {k: input_dict.pop(k) for k in self.obj_constructor_arg_names if k in input_dict}
+
+        if self.debug:
+            print("robj: attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict))
+
         obj = self.obj(obj=obj_kwargs, attr=attr)
 
         # call a method or return a property
         if callable(obj):
-            return self.output_trans(obj(**kwargs))
+            return self.output_trans(obj(**input_dict))
         else:
             return self.output_trans(obj)

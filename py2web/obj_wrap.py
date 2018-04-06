@@ -3,12 +3,12 @@ from __future__ import division
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api.obj_wrap import ObjWrap
 from py2api.util import default_to_jdict
-
+from py2api.constants import ATTR
+from py2api.py2web.constants import FILE_FIELD
 # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
-DFLT_FILE_VAR = 'file'
 
 
-def extract_kwargs_from_web_request(request, convert_arg=None, file_var=DFLT_FILE_VAR):
+def extract_kwargs_from_web_request(request, convert_arg=None, file_var=FILE_FIELD):
     if convert_arg is None:
         convert_arg = {}
     kwargs = dict()
@@ -34,7 +34,6 @@ class WebObjWrapper(ObjWrap):
                  obj_constructor,
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
                  input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
-                 file_var=DFLT_FILE_VAR,  # input processing: name of the variable to use if there's a 'file' in request.files
                  permissible_attr=None,  # what attributes are allowed to be accessed
                  output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
                  cache_size=DFLT_LRU_CACHE_SIZE,
@@ -65,9 +64,11 @@ class WebObjWrapper(ObjWrap):
             output_trans=output_trans,
             cache_size=cache_size,
             debug=debug)
-        self.file_var = file_var
 
-    def get_kwargs_from_request(self, request):
+    def extract_attr(self, request):
+        attr = request.args.get(ATTR)
+
+    def extract_kwargs_from_request(self, request):
         """
         Translate the flask request object into a dict, taking first the contents of request.arg,
         converting them to a type if the name is listed in the convert_arg property, and assigning a default value
