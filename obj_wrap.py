@@ -20,8 +20,6 @@ from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively
 (1) Might want to change all "reserved" strings (such as attr (see ATTR), result (see DFLT_RESULT_FIELD),
 and file (see py2web constant FILE_FIELD) to be prefixed by an underscore,
 so as to have extra protection against collision.
-
-
 """
 ########################################################################################################################
 
