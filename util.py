@@ -4,6 +4,7 @@ import json
 import re
 
 from defaults import DFLT_RESULT_FIELD
+from py2api.constants import _ARG, _JSON, _ATTR, _ARGNAME, _VALTYPE, _ELSE
 
 
 class PermissibleAttr(object):
@@ -48,6 +49,9 @@ def obj_str_from_obj(obj):
     except AttributeError:
         return 'obj'
 
+
+def argname_based_specs_from(specs):
+    pass
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
     """

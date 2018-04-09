@@ -95,21 +95,8 @@ The algorithm then becomes:
 
 from __future__ import division
 
+from py2api.constants import _ARG, _JSON, _ATTR, _ARGNAME, _VALTYPE, _ELSE
 from py2api.py2web.constants import FILE_FIELD
-
-
-class ArgNotFound(object):
-    pass
-
-
-ARG_NOT_FOUND = ArgNotFound()
-
-_ARG = '_arg'
-_JSON = '_json'
-_ATTR = '_attr'
-_ARGNAME = '_argname'
-_VALTYPE = '_valtype'
-_ELSE = '_else'
 
 DFLT_TRANS = {
     _ARG: {'type': str}
@@ -151,6 +138,11 @@ class InputTrans(object):
             trans_spec = {}
         if dflt_spec is None:
             dflt_spec = {}
+        self.trans_spec = trans_spec
+        self.attr_spec = self.trans_spec.get(_ATTR, {})
+        self.attr_spec = self.trans_spec.get(_ATTR, {})
+
+        self.dflt_spec = dflt_spec
 
     def _get_val_from_arg(self, arg, attr):
         pass
@@ -165,20 +157,41 @@ class InputTrans(object):
                 pass
 
     def __call__(self, attr, request):
+        kwargs = request.json
+        kwargs = dict(kwargs, **request.args)
+
         input_dict = dict()
-        for arg in request.args.keys():
+        for arg, val in kwargs.iteritems():
+            if attr in input_dict:
+                input_dict = self.trans_spec
             trans = self.attr_trans.get(_ARG)
 
 
 '''
+{
+    "_attr":
+        {
+            ATTR_NAME_1:
+                {
+                    '_argname': {ARG_NAME_a: trans_func_1a, ...},
+                    '_else': trans_func_attr_else
+                },
+            ATTR_NAME_2: ...
+        },
+    "_argname":
+        {
+            ARG_NAME_b: trans_func_b
+            ARG_NAME_c: ...
+        }
+}
+
+When a given attribute ATTR is called with argument (name) ARGNAME whose type is VALTYPE,
+the decision of what trans_func to use follows the following algorithm:
     If _attr exists and ATTR is listed in _attr:
         (say it's ATTR_NAME_1)
         If ARGNAME is listed in _attr.ATTR_NAME_1._argname:
             (say it's ARG_NAME_a)
             use trans_func_1a
-        elif VALTYPE is listed in _attr.ATTR_NAME_1._valtype:
-            (say it's VAL_TYPE_w)
-            use trans_func_1w
         elif there is an _attr.ATTR_NAME_1._else:
             use trans_func_attr_else
     (... and if we didn't find anything yet, look in _argname...)
