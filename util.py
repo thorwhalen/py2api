@@ -4,7 +4,7 @@ import json
 import re
 
 from defaults import DFLT_RESULT_FIELD
-from py2api.constants import _ARG, _JSON, _ATTR, _ARGNAME, _VALTYPE, _ELSE
+from py2api.constants import _ARGS, _JSON, _ATTR, _ARGNAME, _VALTYPE, _ELSE
 
 
 class PermissibleAttr(object):
