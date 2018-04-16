@@ -1,14 +1,15 @@
 from __future__ import division
 
 
-class ArgNotFound(object):
+class TransNotFound(object):
     pass
 
 
-ARG_NOT_FOUND = ArgNotFound()
+TRANS_NOT_FOUND = TransNotFound()
 
 ATTR = 'attr'
 
+_OUTPUT_TRANS = '_output_trans'
 _ATTR = '_attr'
 _ARGNAME = '_argname'
 _VALTYPE = '_valtype'

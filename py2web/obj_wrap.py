@@ -1,12 +1,14 @@
 from __future__ import division
 
+from py2api.lru import lru_cache
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api.obj_wrap import ObjWrap
 from py2api.util import default_to_jdict
 from py2api.constants import ATTR
 from py2api.py2web.constants import FILE_FIELD
-# TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
 
+
+# TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
 
 def extract_kwargs_from_web_request(request, convert_arg=None, file_var=FILE_FIELD):
     if convert_arg is None:
@@ -30,43 +32,8 @@ def extract_kwargs_from_web_request(request, convert_arg=None, file_var=FILE_FIE
 
 
 class WebObjWrapper(ObjWrap):
-    def __init__(self,
-                 obj_constructor,
-                 obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-                 input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
-                 permissible_attr=None,  # what attributes are allowed to be accessed
-                 output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
-                 cache_size=DFLT_LRU_CACHE_SIZE,
-                 debug=0):
-        """
-        :param obj_constructor: a function that, given some arguments, constructs an object. It is this object
-            that will be wrapped for the webservice
-        :param obj_constructor_arg_names:
-        :param input_trans: (processing) a dict keyed by variable names (str) and valued by a dict containing a
-            'type': a function (typically int, float, bool, and list) that will convert the value of the variable
-                to make it web service compliant
-            'default': A value to assign to the variable if it's missing.
-        :param file_var: name of the variable to use if there's a 'file' in request.files
-        :param permissible_attr: a boolean function that specifies whether an attr is allowed to be accessed
-            Usually constructed using PermissibleAttr class.
-        :param output_trans: (input processing) Function to convert an output to a jsonizable dict
-        :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
-            be LRU-cached.
-        :param output_trans:
-        :param cache_size:
-        :param debug:
-        """
-        super(WebObjWrapper, self).__init__(
-            obj_constructor,
-            obj_constructor_arg_names=obj_constructor_arg_names,
-            input_trans=input_trans,
-            permissible_attr=permissible_attr,
-            output_trans=output_trans,
-            cache_size=cache_size,
-            debug=debug)
-
     def extract_attr(self, request):
-        attr = request.args.get(ATTR)
+        return request.args.get(ATTR)
 
     def extract_kwargs_from_request(self, request):
         """
@@ -76,6 +43,25 @@ class WebObjWrapper(ObjWrap):
         :param request: the flask request object
         :return: a dict of kwargs corresponding to the union of post and get arguments
         """
-        kwargs = extract_kwargs_from_web_request(request, convert_arg=self.input_trans, file_var=self.file_var)
+        kwargs = extract_kwargs_from_web_request(request, convert_arg=self.input_trans)
 
         return dict(kwargs)
+
+    @classmethod
+    def with_lru_cache(cls,
+                       cache_size=DFLT_LRU_CACHE_SIZE,
+                       obj_constructor=None,
+                       obj_constructor_arg_names=None,  # used to determine the params of the object constructors
+                       input_trans=None,
+                       permissible_attr=None,  # what attributes are allowed to be accessed
+                       output_trans=None,
+                       debug=0):
+        return cls.with_decorators(
+            constructor_decorator=lru_cache(maxsize=cache_size),
+            obj_constructor=obj_constructor,
+            obj_constructor_arg_names=obj_constructor_arg_names,
+            permissible_attr=permissible_attr,
+            input_trans=input_trans,
+            output_trans=output_trans,
+            debug=debug
+        )

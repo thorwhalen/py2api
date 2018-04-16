@@ -1,101 +1,6 @@
-"""
-Input trans dict specification format
-
-The objective is to transform a flask request into a dict that contains arguments that can be understood by the
-function or method the attribute points to. Therefore it does two things:
-    (1) Collect argument names and values from the request object
-    (2) Transform/convert/cast the argument values to values the function or method expects
-    (3) Adding arguments that haven't been specified, along with default values
-
-How to do this is totally specified by a spec_dict.
-
-The simplest spec_dict is the empty dict, which will result in taking all the arguments and values of the request
-object (i.e. the union of the request.args and request.json dict) as is.
-
-A step up from that would be to specify what trans function to use according to the argument name. In a perfect world,
-an argument name would always point to the same "thing" which would have the same type(s), no matter what
-function/method is mentioning it. An even more perfect world would be one where the reverse is also true: a same
-"thing" would always have the same type(s) and name.
-
-This argname-->trans_func can be specified in a {argname: trans_func} dict. Bare in mind that you don't have to
-specify everything. For example, if an arg is expected to be a string the function/method/variable, and will be
-expressed as a string in the json payload of a request (it's always a string in the request.args anyway!), then
-no need to convert it to something else.
-
-It is a good practice to strive for this perfect world when coding: A perfect correspondance between name, thing, and
-type. But since the intent of py2api is to separate the API concern from the actual computation code, it shouldn't
-expect the coder to write code in any particular way, even if that way is better.
-
-Therefore the argname-->trans_func won't suffice.
-
-So in addition to the {argname: trans_func} specification, InputTrans provides the ability to condition some
-{argname: trans_func} links on the attribute.
-
-{
-    "_attr":
-        {
-            ATTR_NAME_1:
-                {
-                    '_argname': {ARG_NAME_a: trans_func_1a, ...},
-                    '_else': trans_func_attr_else
-                },
-            ATTR_NAME_2: ...
-        },
-    "_argname":
-        {
-            ARG_NAME_b: trans_func_b
-            ARG_NAME_c: ...
-        }
-}
-
-When a given attribute ATTR is called with argument (name) ARGNAME whose type is VALTYPE,
-the decision of what trans_func to use follows the following algorithm:
-    If _attr exists and ATTR is listed in _attr:
-        (say it's ATTR_NAME_1)
-        If ARGNAME is listed in _attr.ATTR_NAME_1._argname:
-            (say it's ARG_NAME_a)
-            use trans_func_1a
-        elif there is an _attr.ATTR_NAME_1._else:
-            use trans_func_attr_else
-    (... and if we didn't find anything yet, look in _argname...)
-    If _argname exists and ARGNAME is listed in _argname:
-        (say it's ARG_NAME_b)
-        If VALTYPE is listed in _argname.ARG_NAME_b._valtype:
-            (say it's VAL_TYPE_x)
-            use trans_func_bx
-        elif there is an _argname.ARG_NAME_b._else:
-            use trans_func_b_else
-    (... and if we didn't find anything yet, look in _valtype...)
-    If _valtype exists and VALTYPE is listed in _valtype:
-        (say it's VALTYPE_y)
-        use trans_func_y
-    (... and if we didn't find anything yet, look in _else...)
-    If _else exists:
-        use trans_func_else
-    (... and if we didn't find anything so far, don't use a trans func at all)
-
-IMPORTANT NOTE: The top level _valtype and _else were included for consistency and completeness, but rare are the cases
-that they'd actually be included in the specification, and if used, should be used with care.
-An _else at the top level will result in all arguments that were not resolved by _attr, _argname, or _valtype, to be
-cast to the same single type.
-Similarly, a _valtype at the top level will result in all arguments that were not resolved by _attr or _argname to be
-cast a type that is only conditioned by the VALTYPE of the argument.
-
-On top of the specification choices described above, py2web InputTrans offers the possibility of conditioning on the
-"source" of the (attr, arg) pair: The source could be _arg (i.e. the args was included in requests.args) or _json
-(i.e. the arg was included in request.json).
-It does so by allowing yet another top level key in the trans_spec: _source.
-The algorithm then becomes:
-    If the arg was found in request.args, look in _source._args (which contains the same trans_spec format mentioned
-    above)
-    Elif the arg was found in request.json, look in _source._json (which contains the same trans_spec format mentioned
-    above)
-    And if not found yet, proceed as usual.
-"""
-
 from __future__ import division
 
-from py2api.constants import ARG_NOT_FOUND
+from py2api.constants import TRANS_NOT_FOUND
 from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
 from py2api.py2web.constants import _ARGS, _JSON, _SOURCE
 
@@ -165,6 +70,13 @@ class InputTrans(object):
     Further, if you use the same argument name and type to represent the same "thing", no matter what the attribute
     (which, by the way, is good practice), then you only need to specify an _argname: trans_func once (unless the
     type of the argument will be different according to the source (e.g. url query (args) or json payload).
+
+    Other important note: The top level _valtype and _else were included for consistency and completeness,
+    but rare are the cases that they'd actually be included in the specification, and if used, should be used with care.
+    An _else at the top level will result in all arguments that were not resolved by _attr, _argname, or _valtype, to be
+    cast to the same single type.
+    Similarly, a _valtype at the top level will result in all arguments that were not resolved by _attr or _argname to
+    be cast a type that is only conditioned by the VALTYPE of the argument.
 
     Additionally, the class provides two other parameters:
         * dflt_spec: A {attr: {argname: val, ...}, ...} dict that allows us to overwrite the functions defaults, or
@@ -331,7 +243,7 @@ class InputTrans(object):
         pass
 
     def search_trans_func(self, attr, argname, val, trans_spec, source=None):
-        trans_func = ARG_NOT_FOUND  # fallback default (i.e. "found nothing")
+        trans_func = TRANS_NOT_FOUND  # fallback default (i.e. "found nothing")
         # print('search_trans_func: {}'.format(trans_spec))
         if callable(trans_spec):
             # print("  callable(trans_spec)")
@@ -339,7 +251,7 @@ class InputTrans(object):
         elif isinstance(trans_spec, dict):
             if len(trans_spec) == 0:
                 # print("  len(trans_spec) == 0")
-                return ARG_NOT_FOUND
+                return TRANS_NOT_FOUND
             elif len(trans_spec) > 0:
                 ############### search _SOURCE ###############
                 if source is not None:  # only do this if there's an actual source specified
@@ -347,7 +259,7 @@ class InputTrans(object):
                     if _trans_spec:
                         trans_func = self.search_trans_func(attr, argname, val, trans_spec=_trans_spec, source=source)
 
-                    if trans_func is not ARG_NOT_FOUND:
+                    if trans_func is not TRANS_NOT_FOUND:
                         # print("  _SOURCE trans_func")
                         return trans_func
 
@@ -355,20 +267,22 @@ class InputTrans(object):
                 # print('  _ATTR: search_trans_func({},{},{})'.format(attr, argname, val))
                 _trans_spec = trans_spec.get(_ATTR, {}).get(attr, {})
                 if _trans_spec:
-                    trans_func = self.search_trans_func(attr, argname, val, trans_spec=_trans_spec, source=source)
+                    trans_func = self.search_trans_func(attr, argname, val,
+                                                        trans_spec=_trans_spec,
+                                                        source=source)
 
-                if trans_func is not ARG_NOT_FOUND:
+                if trans_func is not TRANS_NOT_FOUND:
                     # print("  _ATTR trans_func")
                     return trans_func
 
                 ############### search _ARGNAME ###############
                 # print('  _ARGNAME: search_trans_func({},{},{})'.format(attr, argname, val))
-                _trans_spec = trans_spec.get(_ARGNAME, {}).get(argname, ARG_NOT_FOUND)
+                _trans_spec = trans_spec.get(_ARGNAME, {}).get(argname, TRANS_NOT_FOUND)
                 if _trans_spec:
                     trans_func = self.search_trans_func(attr, argname, val,
                                                         trans_spec=_trans_spec,
                                                         source=source)
-                if trans_func is not ARG_NOT_FOUND:
+                if trans_func is not TRANS_NOT_FOUND:
                     # print("  _ARGNAME trans_func")
                     return trans_func
 
@@ -385,10 +299,10 @@ class InputTrans(object):
                     return self.search_trans_func(attr, argname, val, trans_spec[_ELSE], source=source)
                 else:
                     # print("  _ELSE ARG_NOT_FOUND")
-                    return ARG_NOT_FOUND
+                    return TRANS_NOT_FOUND
         else:
             # print("  all else failed ARG_NOT_FOUND")
-            return ARG_NOT_FOUND
+            return TRANS_NOT_FOUND
 
     def __call__(self, attr, request):
         """
@@ -405,7 +319,7 @@ class InputTrans(object):
             for argname, val in request_data:  # loop through the (arg, val) pairs of this data...
                 # ... and see if there's a trans_func to convert the val
                 trans_func = self.search_trans_func(attr, argname, val, trans_spec=self.trans_spec, source=source)
-                if trans_func is not ARG_NOT_FOUND:  # if there is...
+                if trans_func is not TRANS_NOT_FOUND:  # if there is...
                     input_dict[argname] = trans_func(val)  # ... convert the val
                 else:  # if there's not...
                     input_dict[argname] = val  # ... just take the val as is

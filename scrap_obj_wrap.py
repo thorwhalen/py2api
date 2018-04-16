@@ -12,7 +12,7 @@ from py2api.errors import MissingAttribute, ForbiddenAttribute
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api.lru import lru_cache
 from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively
-from py2api.constants import _OUTPUT_TRANS
+
 
 ########################################################################################################################
 # Dev Notes
@@ -21,19 +21,18 @@ from py2api.constants import _OUTPUT_TRANS
 and file (see py2web constant FILE_FIELD) to be prefixed by an underscore,
 so as to have extra protection against collision.
 """
-
-
 ########################################################################################################################
 
 
 class ObjWrap(object):
     def __init__(self,
-                 obj_constructor=None,
+                 obj_constructor,
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
                  permissible_attr=None,
-                 input_trans=None,  # input processing: Callable specifying how to prepare arguments for methods
+                 input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
                  obj_wrap=None,
-                 output_trans=None,  # output processing: Function to convert output
+                 output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
+                 cache_size=DFLT_LRU_CACHE_SIZE,
                  debug=0):
         """
         An class that constructs a wrapper around an object.
@@ -60,25 +59,37 @@ class ObjWrap(object):
             type that the underlying function (obj specified by attr) expects.
             Note the input_trans is usually constructed with a function factory class that uses it's parameters to
             adapt to each attr, similarly as with input_trans and output_trans.
+        :param: obj_wrap: None (default), or a decorator; a callable that takes the (obj, attr, input_dict) triple and
+            returns the actual (obj, input_dict) that needs to be used. This is usually used when we need to modify
+            the way the obj function works (for example, wrapping the function in a gevent process so we can call it
+            without waiting for the response. The reason for including attr is that we (often) want to only wrap
+            specific functions. The reason to include input_dict (often ignored) is in case we want to parametrize
+            how the function is wrapped according to some arguments that were included in request (often in the form
+            of special argument (by convention, prefixed by an underscore) that is not an argument of the target
+            function (and therefore should by popped out by the obj_wrap), but is there to specify how to do things
+            differently.
+            Note that obj_wrap is usually constructed with a function factory class that uses it's parameters to
+            adapt to each attr, similarly as with input_trans and output_trans.
         :param output_trans: (input processing) Function to convert an output to a jsonizable dict.
             Note the input_trans is usually constructed with a function factory class that uses it's parameters to
             adapt to each attr, similarly as with input_trans and output_trans.
         :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
             be LRU-cached.
         """
-        if input_trans is None:
-            input_trans = lambda x: x
-        if output_trans is None:
-            output_trans = lambda x: x
-        must_be_callable = [obj_constructor, input_trans, obj_wrap, output_trans]
+        must_be_callable = [input_trans, obj_wrap, output_trans]
         for f in must_be_callable:
-            assert callable(f), "these must all be callables: {}".format(", ".join(must_be_callable))
+            assert callable(f), "input_trans, obj_wrap, output_trans must all be callables"
 
-        self.obj_constructor = obj_constructor
+        if isinstance(cache_size, int) and cache_size != 1:
+            self.obj_constructor = lru_cache(cache_size=cache_size)(obj_constructor)
+        elif cache_size is None or cache_size == 1:
+            self.obj_constructor = obj_constructor
+        else:
+            raise ValueError("cache_size must be an int or None")
 
-        if obj_constructor_arg_names is None:  # no constructor arguments
+        if obj_constructor_arg_names is None:
             obj_constructor_arg_names = []
-        elif isinstance(obj_constructor_arg_names, basestring):  # a single constructor argument
+        elif isinstance(obj_constructor_arg_names, basestring):
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
@@ -127,9 +138,9 @@ class ObjWrap(object):
 
         # at this point obj is an actual obj_constructor constructed object...
         # ... so get the leaf (attr) object
-        return get_attr_recursively(obj_spec, attr)  # get the (possibly nested) attribute object
+        return get_attr_recursively(obj_spec, attr)  # return the (possibly nested) attribute object
 
-    def __call__(self, request):
+    def robj(self, request):
         """
         Translates a request to an object access (get property value or call object method).
             Uses self.get_kwargs_from_request(request) to get a dict of kwargs from request.arg
@@ -146,7 +157,16 @@ class ObjWrap(object):
         :return: The value of an object's property, or the output of a method.
         """
 
-        ###### Get the attr (a string saying what we want to access ####################################################
+        attr, input_spec = self.extract_attr(request)
+
+        obj_attr, input_dict = self.input_trans(**input_spec)
+
+        input_spec = self.get_attr_obj(**input_spec)
+
+
+
+
+
         # Extract attr from request and make sure it's there, and is permissible
         attr = self.extract_attr(request)
         if attr is None:
@@ -154,117 +174,36 @@ class ObjWrap(object):
         elif not self.permissible_attr(attr):
             raise ForbiddenAttribute(attr)
 
-        ###### Extract the needed data from request and format values ##################################################
         # get an input_dict from the request, and format it's values (might depend on attr, so passed along)
         input_dict = self.input_trans(attr, request)
 
         if self.debug:
-            print("input_dict = {}".format(input_dict))
+            print("robj: kwargs = {}".format(input_dict))
 
-        ###### Get or construct the attribute object being accessed ####################################################
         # pop off any arguments that are meant to be for the base obj (module, function, class instance) constructor
         obj_kwargs = {k: input_dict.pop(k) for k in self.obj_constructor_arg_names if k in input_dict}
 
         if self.debug:
-            print("attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict))
+            print("robj: attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict))
 
         # make the base object
         obj_attr = self.obj_attr(obj_spec=obj_kwargs, attr=attr)
 
-        ###### Return attribute, or call it with input_dict kwargs, and transform output ###############################
+        if self.obj_wrap is not None:
+            obj_attr = self.obj_wrap(obj_attr, attr, input_dict)
+
         # Pop off the special output_trans argument, if there
         # NOTE: Could also implement something allowing to pass arguments to output_trans_func/
         # NOTE: Decided to avoid being even less YAGNI than I already am!
-        output_trans = input_dict.pop(_OUTPUT_TRANS, None)
+        output_trans = input_dict.pop('_output_trans', None)
 
-        # call a method or get property
+        # call a method or return a property
         if callable(obj_attr):  # the user wants to call obj on the input_dict arguments
-            result = obj_attr(**input_dict)
+            return self.output_trans(obj_attr(**input_dict), attr, output_trans=output_trans)
         else:  # the obj is itself the what the user wants
-            result = obj_attr
+            return self.output_trans(obj_attr, attr)
 
-        return self.output_trans(result, attr, output_trans=output_trans)
+    #     return self.call_and_trans(attr, obj_attr, input_dict)
+    #
+    # def call_and_trans(self, attr, obj_attr, input_dict):
 
-    @classmethod
-    def with_decorators(cls,
-                        constructor_decorator=None,
-                        # obj_attr_decorator=None,
-                        obj_constructor=None,
-                        obj_constructor_arg_names=None,
-                        permissible_attr=None,
-                        input_trans=None,
-                        output_trans=default_to_jdict,
-                        debug=0):
-        if constructor_decorator is not None:
-            wrapped_obj_constructor = constructor_decorator(obj_constructor)
-        else:
-            wrapped_obj_constructor = obj_constructor
-
-        # if self.obj_wrap is not None:  # might need to wrap that obj_attr?
-        #     _obj_attr = self.obj_wrap(_obj_attr, attr)  # wrap it (if obj_wrap says to)
-
-        return cls(obj_constructor=wrapped_obj_constructor,
-                   obj_constructor_arg_names=obj_constructor_arg_names,
-                   permissible_attr=permissible_attr,
-                   input_trans=input_trans,
-                   output_trans=output_trans,
-                   debug=debug)
-
-
-        # :param: obj_wrap: None (default), or a decorator; a callable that takes the (obj, attr, input_dict) triple and
-        #     returns the actual (obj, input_dict) that needs to be used. This is usually used when we need to modify
-        #     the way the obj function works (for example, wrapping the function in a gevent process so we can call it
-        #     without waiting for the response. The reason for including attr is that we (often) want to only wrap
-        #     specific functions. The reason to include input_dict (often ignored) is in case we want to parametrize
-        #     how the function is wrapped according to some arguments that were included in request (often in the form
-        #     of special argument (by convention, prefixed by an underscore) that is not an argument of the target
-        #     function (and therefore should by popped out by the obj_wrap), but is there to specify how to do things
-        #     differently.
-        #     Note that obj_wrap is usually constructed with a function factory class that uses it's parameters to
-        #     adapt to each attr, similarly as with input_trans and output_trans.
-        #
-
-        # class ObjWrapWithWrappedConstructor(ObjWrap):
-        #     def __init__(self,
-        #                  constructor_wrap,
-        #                  obj_constructor,
-        #                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-        #                  permissible_attr=None,
-        #                  input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
-        #                  obj_wrap=None,
-        #                  output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
-        #                  debug=0):
-        #         super(ObjWrapWithWrappedConstructor, self).__init__(obj_constructor,
-        #                                                             obj_constructor_arg_names=obj_constructor_arg_names,
-        #                                                             permissible_attr=permissible_attr,
-        #                                                             input_trans=input_trans,
-        #                                                             obj_wrap=obj_wrap,
-        #                                                             output_trans=output_trans,
-        #                                                             debug=debug)
-        #         self.obj_constructor = constructor_wrap(obj_constructor)
-
-        # obj_constructor,
-        # obj_constructor_arg_names = None,  # used to determine the params of the object constructors
-        # permissible_attr = None,
-        # input_trans = None,  # input processing: Callable specifying how to prepare ws arguments for methods
-        # obj_wrap = None,
-        # output_trans = default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
-        # debug = 0):
-
-        # class ObjWrap(object):
-        #     def __init__(self,
-        #                  obj_constructor,
-        #                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-        #                  permissible_attr=None,
-        #                  input_trans=None,  # input processing: Callable specifying how to prepare ws arguments for methods
-        #                  obj_wrap=None,
-        #                  output_trans=default_to_jdict,  # output processing: Function to convert an output to a jsonizable dict
-        #                  cache_size=DFLT_LRU_CACHE_SIZE,
-        #                  debug=0):
-        #
-        #         if isinstance(cache_size, int) and cache_size != 1:
-        #             self.obj_constructor = lru_cache(cache_size=cache_size)(obj_constructor)
-        #         elif cache_size is None or cache_size == 1:
-        #             self.obj_constructor = obj_constructor
-        #         else:
-        #             raise ValueError("cache_size must be an int or None")
