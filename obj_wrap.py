@@ -9,10 +9,8 @@ minimum-necessary code, crucial, for instance, for micro-services.
 """
 
 from py2api.errors import MissingAttribute, ForbiddenAttribute
-from py2api.defaults import DFLT_LRU_CACHE_SIZE
-from py2api.lru import lru_cache
-from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively
-from py2api.constants import _OUTPUT_TRANS
+from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively, enhanced_docstr
+from py2api.constants import _OUTPUT_TRANS, _HELP
 
 ########################################################################################################################
 # Dev Notes
@@ -66,10 +64,6 @@ class ObjWrap(object):
         :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
             be LRU-cached.
         """
-        if input_trans is None:
-            input_trans = lambda x: x
-        if output_trans is None:
-            output_trans = lambda x: x
         must_be_callable = [obj_constructor, input_trans, obj_wrap, output_trans]
         for f in must_be_callable:
             assert callable(f), "these must all be callables: {}".format(", ".join(must_be_callable))
@@ -149,6 +143,8 @@ class ObjWrap(object):
         ###### Get the attr (a string saying what we want to access ####################################################
         # Extract attr from request and make sure it's there, and is permissible
         attr = self.extract_attr(request)
+        # TODO: handle the case where attr == _HELP (give a list of permissible attrs)
+
         if attr is None:
             raise MissingAttribute()
         elif not self.permissible_attr(attr):
@@ -168,8 +164,13 @@ class ObjWrap(object):
         if self.debug:
             print("attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict))
 
-        # make the base object
+        # make the attribute object
         obj_attr = self.obj_attr(obj_spec=obj_kwargs, attr=attr)
+
+        ###### Handle some special args ################################################################################
+        _help = input_dict.pop(_HELP, None)
+        if _help:
+            return enhanced_docstr(obj_attr)
 
         ###### Return attribute, or call it with input_dict kwargs, and transform output ###############################
         # Pop off the special output_trans argument, if there

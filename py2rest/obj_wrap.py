@@ -5,7 +5,7 @@ from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api.obj_wrap import ObjWrap
 from py2api.util import default_to_jdict
 from py2api.constants import ATTR
-from py2api.py2web.constants import FILE_FIELD
+from py2api.py2rest.constants import FILE_FIELD
 
 
 # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.

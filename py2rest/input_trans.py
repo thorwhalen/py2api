@@ -2,7 +2,7 @@ from __future__ import division
 
 from py2api.constants import TRANS_NOT_FOUND
 from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
-from py2api.py2web.constants import _ARGS, _JSON, _SOURCE
+from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
 
 DFLT_TRANS = {
     _ARGS: {'type': str}

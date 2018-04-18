@@ -2,9 +2,67 @@ from __future__ import division
 
 import json
 import re
+from inspect import getargspec
 
 from defaults import DFLT_RESULT_FIELD
-from py2api.constants import _ARGS, _JSON, _ATTR, _ARGNAME, _VALTYPE, _ELSE
+
+
+def _strigify_val(val):
+    """
+    Stringify a value. Here stringify means:
+        * If it's a string, surround it with double quotes (so '"' + val '"')
+        * If it's a callable or a type (class, etc.), then get it's __name__
+        * If not, just return "{}".format(val)
+    See an example of use in enhanced_docstr function.
+    :param val: value to be stringified
+    :return:
+    """
+    if isinstance(val, basestring):
+        return '"' + val + '"'
+    elif callable(val) or isinstance(val, type):
+        return val.__name__
+    else:
+        return "{}".format(val)
+
+
+def enhanced_docstr(func):
+    """
+    Returns the string of func.__doc__ where it prepended the function call description
+    (i.e. function name, arguments, and default values).
+    :param func:
+    :return:
+    >>> def some_function(x):
+    ...     pass
+    ...
+    >>> class SomeClass(object):
+    ...     pass
+    ...
+    >>> def foo(a, b=3, c='as', d=SomeClass, dd=some_function, ddd=None, *args, **kwargs):
+    ...     '''some documentation...'''
+    ...     pass
+    >>> print(enhanced_docstr(foo))
+    foo(a, b=3, c="as", d=SomeClass, dd=some_function, ddd=None, *args, **kwargs)
+    some documentation...
+    >>>
+    """
+    argspec = getargspec(func)
+
+    dflts = argspec.defaults
+    dflts = map(_strigify_val, dflts)
+
+    args_strings = list()
+    args_strings += argspec.args[:-len(dflts)]
+    args_strings += map(lambda x: "{}={}".format(*x),
+                        zip(argspec.args[-len(dflts):], dflts))
+    if argspec.varargs is not None:
+        args_strings += ["*{}".format(argspec.varargs)]
+    if argspec.keywords is not None:
+        args_strings += ["**{}".format(argspec.keywords)]
+
+    func_spec = "{funcname}({args_strings})".format(
+        funcname=func.__name__, args_strings=", ".join(args_strings))
+
+    return func_spec + '\n' + func.__doc__
 
 
 class PermissibleAttr(object):
@@ -52,6 +110,7 @@ def obj_str_from_obj(obj):
 
 def argname_based_specs_from(specs):
     pass
+
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
     """

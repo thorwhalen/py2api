@@ -14,3 +14,7 @@ _ATTR = '_attr'
 _ARGNAME = '_argname'
 _VALTYPE = '_valtype'
 _ELSE = '_else'
+
+_HELP = '_help'
+
+SPECIAL_ARGs = {_HELP}
