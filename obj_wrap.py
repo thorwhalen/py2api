@@ -30,8 +30,9 @@ class ObjWrap(object):
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
                  permissible_attr=None,
                  input_trans=None,  # input processing: Callable specifying how to prepare arguments for methods
-                 obj_wrap=None,
+                 # obj_wrap=None,
                  output_trans=None,  # output processing: Function to convert output
+                 name=None,
                  debug=0):
         """
         An class that constructs a wrapper around an object.
@@ -64,9 +65,10 @@ class ObjWrap(object):
         :param cache_size: The size (and int) of the LRU cache. If equal to 1 or None, the constructed object will not
             be LRU-cached.
         """
-        must_be_callable = [obj_constructor, input_trans, obj_wrap, output_trans]
+        must_be_callable = [obj_constructor, input_trans, output_trans]
         for f in must_be_callable:
-            assert callable(f), "these must all be callables: {}".format(", ".join(must_be_callable))
+            assert callable(f), "these must all be callables: {}".format(", ".join(
+                ['obj_constructor', 'input_trans', 'output_trans']))
 
         self.obj_constructor = obj_constructor
 
@@ -84,19 +86,11 @@ class ObjWrap(object):
 
         self.input_trans = input_trans  # a specification of how to convert specific argument names or types
 
-        self.obj_wrap = obj_wrap
+        # self.obj_wrap = obj_wrap
         self.output_trans = output_trans
         self.debug = debug
-
-    def extract_attr(self, request):
-        """
-        Takes a request object and returns an attribute and a request (possibly transformed).
-        It is used in the beginning of the robj method to figure out what to do from there.
-        :param request: A request object. In the case of WebObjWrap, it's a Request object,
-        in the case of ScriptObjWrap it's the args string.
-        :return: attr, request
-        """
-        raise NotImplementedError("Need to implement this method for the ObjWrap to work!")
+        if name is not None:
+            self.__name__ = name
 
     def obj_attr(self, obj_spec, attr):
         """
@@ -140,19 +134,15 @@ class ObjWrap(object):
         :return: The value of an object's property, or the output of a method.
         """
 
-        ###### Get the attr (a string saying what we want to access ####################################################
-        # Extract attr from request and make sure it's there, and is permissible
-        attr = self.extract_attr(request)
-        # TODO: handle the case where attr == _HELP (give a list of permissible attrs)
+        ###### Extract the needed data from request and format values ##################################################
+        # get an input_dict from the request, and format it's values (might depend on attr, so passed along)
+        attr, input_dict = self.input_trans(request)
 
+        # make sure attr is there, and is permissible
         if attr is None:
             raise MissingAttribute()
         elif not self.permissible_attr(attr):
             raise ForbiddenAttribute(attr)
-
-        ###### Extract the needed data from request and format values ##################################################
-        # get an input_dict from the request, and format it's values (might depend on attr, so passed along)
-        input_dict = self.input_trans(attr, request)
 
         if self.debug:
             print("input_dict = {}".format(input_dict))

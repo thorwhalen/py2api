@@ -5,6 +5,7 @@ from requests import Request, Session
 
 DFLT_ROOT_URL = 'https://dev.otosense.ai/'
 
+
 class Rest2Py(object):
     def __init__(self, root_url, py2rest, attr_list=()):
         self.root_url = root_url
@@ -57,10 +58,11 @@ class API(object):
     def call_attr(self, attr, **kwargs):
         url_suffix = '?attr={attr}'.format(attr=attr)
         req = self.request(method='POST', url_suffix=url_suffix, json=kwargs)
+        if not hasattr(req, 'args'):
+            req.args = {'attr': attr}
         self.last_request = req
         response = self.prepare_and_send_request(req)
         if response.status_code != 200:
             self.last_non_200_response = response
         return response.content
         # '?attr = can_projects & access = c_citypa_3 @ otosense.com, fv_mgc, prod'
-

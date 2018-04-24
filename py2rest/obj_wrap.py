@@ -32,8 +32,6 @@ def extract_kwargs_from_web_request(request, convert_arg=None, file_var=FILE_FIE
 
 
 class WebObjWrapper(ObjWrap):
-    def extract_attr(self, request):
-        return request.args.get(ATTR)
 
     def extract_kwargs_from_request(self, request):
         """

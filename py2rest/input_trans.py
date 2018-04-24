@@ -1,6 +1,6 @@
 from __future__ import division
 
-from py2api.constants import TRANS_NOT_FOUND
+from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
 from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
 
@@ -22,9 +22,15 @@ def _preprocess_trans_dict(trans_dict):
 
 def get_request_data_from_source(request, source):
     if source == _JSON:
-        return request.json.items()
+        if hasattr(request, 'json'):
+            return request.json.items()
+        else:
+            return {}
     elif source == _ARGS:
-        return request.args.items()
+        if hasattr(request, 'args'):
+            return request.args.items()
+        else:
+            return {}
     else:
         raise ValueError("This source isn't recognized: {}".format(source))
 
@@ -304,14 +310,15 @@ class InputTrans(object):
             # print("  all else failed ARG_NOT_FOUND")
             return TRANS_NOT_FOUND
 
-    def __call__(self, attr, request):
+    def __call__(self, request):
         """
-        Extract and convert the request data for the given attribute (including defaults if any are specified)
-        :param attr: The attribute the request is for
+        Extract attr and data to call it with (converting the request data for the given attribute
+        (including defaults if any are specified)
         :param request: A flask Request object
-        :return: an {arg: val, ...} dict
+        :return: attr, input_dict, where input_dict is an {arg: val, ...} dict
         """
         # start with the defaults (or an empty dict)
+        attr = request.args.get(ATTR)
         input_dict = self.dflt_spec.get(attr, {})
 
         for source in self.sources:  # loop through sources
@@ -323,5 +330,5 @@ class InputTrans(object):
                     input_dict[argname] = trans_func(val)  # ... convert the val
                 else:  # if there's not...
                     input_dict[argname] = val  # ... just take the val as is
-
-        return input_dict
+        input_dict.pop(ATTR, None)
+        return attr, input_dict
