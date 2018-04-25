@@ -1,7 +1,7 @@
 from __future__ import division
 
 from py2api.constants import TRANS_NOT_FOUND, ATTR
-from py2api.constants import _ATTR, _ARGNAME, _ELSE
+from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
 from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
 
 DFLT_TRANS = {
@@ -140,6 +140,14 @@ class InputTrans(object):
     >>> #   * condition the conversion on the val type, nested within another condition, or not
     >>> from pprint import pprint
     >>>
+    >>> class SpecialType(object):
+    ...     def __init__(self, x):
+    ...         self.x = x
+    ...     def __str__(self):
+    ...         return str(self.x)
+    ...     def __len__(self):
+    ...         return len(self.x)
+    ...
     >>> def test_item(input_trans, request):
     ...     attr, kwargs = input_trans(request)
     ...     print("Testing with {}".format(attr))
@@ -152,6 +160,9 @@ class InputTrans(object):
     ...                 'list_1': str,
     ...                 'list_2': lambda x: '|'.join(x),
     ...                 'float_1': lambda x: int(float(x))
+    ...             },
+    ...             _VALTYPE: {
+    ...                 SpecialType: len
     ...             }
     ...         }
     ...     },
@@ -165,13 +176,18 @@ class InputTrans(object):
     ...         },
     ...         'int_1': int,
     ...         'float_1': float
+    ...     },
+    ...     _VALTYPE: {
+    ...         # note that such blanket type conditions are rare. They are useful mostly for custom objects.
+    ...         SpecialType: str
     ...     }
     ... }
     >>> input_trans = InputTrans(trans_spec=trans_spec)
     >>> request = MockRequest(
     ...     json={
     ...         'list_1': ['should', 'become', 'set'],
-    ...         'list_2': ['should', 'become', 'tuple']
+    ...         'list_2': ['should', 'become', 'tuple'],
+    ...         'special': SpecialType("I'm special")
     ...     }
     ... )
     >>> request.set_url('?attr=special_attr&int_1=34&float_1=3.14159')
@@ -180,19 +196,22 @@ class InputTrans(object):
     {'float_1': 3,
      'int_1': 34,
      'list_1': "['should', 'become', 'set']",
-     'list_2': 'should|become|tuple'}
+     'list_2': 'should|become|tuple',
+     'special': 11}
     >>> request.set_url('?attr=any_attr&int_1=34&float_1=3.14159')
     >>> test_item(input_trans, request=request)
     Testing with any_attr
     {'float_1': 3.14159,
      'int_1': 34,
      'list_1': set(['become', 'set', 'should']),
-     'list_2': ('should', 'become', 'tuple')}
+     'list_2': ('should', 'become', 'tuple'),
+     'special': "I'm special"}
     >>> request = MockRequest(
     ...     url='?attr=any_attr&float_1=3.14159&list_2=should|become|tuple',
     ...     json={
     ...         'list_1': ['should', 'become', 'set'],
-    ...         'other_arg': 'another arg'
+    ...         'other_arg': 'another arg',
+    ...         'special': SpecialType("I'm special")
     ...     }
     ... )
     >>>
@@ -201,7 +220,8 @@ class InputTrans(object):
     {'float_1': 3.14159,
      'list_1': set(['become', 'set', 'should']),
      'list_2': ('should', 'become', 'tuple'),
-     'other_arg': 'another arg'}
+     'other_arg': 'another arg',
+     'special': "I'm special"}
     >>>
     >>> request = MockRequest(
     ...     url='?attr=any_attr&int_1=34&float_1=2.71',
@@ -209,7 +229,8 @@ class InputTrans(object):
     ...         'list_1': ['should', 'become', 'set'],
     ...         'list_2': ['should', 'become', 'tuple'],
     ...         'other_arg': 'another arg',
-    ...         'float_1': 3.14159
+    ...         'float_1': 3.14159,
+    ...         'special': SpecialType("I'm special")
     ...     }
     ... )
     >>> test_item(input_trans, request=request)
@@ -218,7 +239,8 @@ class InputTrans(object):
      'int_1': 34,
      'list_1': set(['become', 'set', 'should']),
      'list_2': ('should', 'become', 'tuple'),
-     'other_arg': 'another arg'}
+     'other_arg': 'another arg',
+     'special': "I'm special"}
     """
 
     def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS)):
@@ -250,18 +272,9 @@ class InputTrans(object):
 
                     return trans_func
 
-                ############### search _SOURCE ###############
-                # TODO: Would like to include as search_in_field(trans_spec, _SOURCE, source) in the or below.
-                if source is not None:  # only do this if there's an actual source specified
-                    _trans_spec = trans_spec.get(_SOURCE, {}).get(source, {})
-                    if _trans_spec:
-                        trans_func = self.search_trans_func(attr, argname, val, trans_spec=_trans_spec, source=source)
-
-                    if trans_func is not TRANS_NOT_FOUND:
-                        return trans_func
-
                 trans_func = \
-                    search_in_field(trans_spec, _ATTR, attr) \
+                    search_in_field(trans_spec, _SOURCE, source) \
+                    or search_in_field(trans_spec, _ATTR, attr) \
                     or search_in_field(trans_spec, _ARGNAME, argname)
 
                 # ############### search _SOURCE ###############
@@ -291,6 +304,12 @@ class InputTrans(object):
                 #                                         source=source)
                 # if trans_func is not TRANS_NOT_FOUND:
                 #     return trans_func
+
+                ############### search _VALTYPE ###############
+                if _VALTYPE in trans_spec:
+                    for _type, _type_trans_spec in trans_spec[_VALTYPE].items():
+                        if isinstance(val, _type):
+                            return _type_trans_spec
 
                 ############### _ELSE ###############
                 _trans_spec = trans_spec.get(_ELSE, TRANS_NOT_FOUND)

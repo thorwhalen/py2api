@@ -5,7 +5,8 @@ class TransNotFound(object):
     pass
 
 
-TRANS_NOT_FOUND = TransNotFound()
+# TRANS_NOT_FOUND = TransNotFound()
+TRANS_NOT_FOUND = None
 
 ATTR = 'attr'
 

@@ -67,5 +67,6 @@ app = mk_app(route_func_list, app_name=module_name)
 
 if __name__ == "__main__":
     app_run_kwargs = dflt_run_app_kwargs()
+    app_run_kwargs['port'] = 5003
     # print("Starting the app with kwargs: {}".format(app_run_kwargs))
     app.run(**app_run_kwargs)
