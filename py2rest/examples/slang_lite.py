@@ -40,21 +40,14 @@ input_trans = InputTrans(
 
 output_trans = OutputTrans(lambda x: {'_result': x})
 
-
-# constructor ##########################################################################################################
-def slang_constructor(sr=DFLT_SR, tile_size_frm=DFLT_TILE_SIZE_FRM, chk_size_frm=DFLT_CHK_SIZE_FRM):
-    return TaggedWaveformAnalysisForWS(sr=sr, tile_size_frm=tile_size_frm, chk_size_frm=chk_size_frm)
-
-
 # wrapper ##############################################################################################################
-slang_lite = WebObjWrapper(obj_constructor=slang_constructor,
+slang_lite = WebObjWrapper(obj_constructor=TaggedWaveformAnalysisForWS,
                            obj_constructor_arg_names=['sr', 'tile_size_frm', 'chk_size_frm'],
                            permissible_attr=attr_permissions,
                            input_trans=input_trans,
                            output_trans=output_trans,
-                           name='slang_lite',
+                           name='/slang_lite/',
                            debug=0)
-
 
 # Adding routes to app #################################################################################################
 
@@ -63,7 +56,6 @@ route_func_list = [slang_lite]
 module_name, _ = os.path.splitext(os.path.basename(__file__))
 
 app = mk_app(route_func_list, app_name=module_name)
-
 
 if __name__ == "__main__":
     app_run_kwargs = dflt_run_app_kwargs()

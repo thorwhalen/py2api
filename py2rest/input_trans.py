@@ -1,5 +1,7 @@
 from __future__ import division
 
+import re
+
 from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _ELSE
 from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
@@ -52,7 +54,6 @@ class InputTrans(object):
             '_source': {source: trans_spec, ...} dict,
             '_attr': {attr: trans_spec} dict
             '_argname': {argname: trans_spec, ...} dict,
-            '_valtype': {valtype: trans_spec, ...} dict,
             '_else': trans_spec
     See that this specification language is defined recursively since every trans_spec mentioned above could be itself
     a callable or a trans_spec dict.
@@ -309,6 +310,9 @@ class InputTrans(object):
         else:
             return TRANS_NOT_FOUND
 
+    def _get_attr_from_request(self, request):
+        return request.args.get(ATTR)
+
     def __call__(self, request):
         """
         Extract attr and data to call it with (converting the request data for the given attribute
@@ -316,8 +320,10 @@ class InputTrans(object):
         :param request: A flask Request object
         :return: attr, input_dict, where input_dict is an {arg: val, ...} dict
         """
-        # start with the defaults (or an empty dict)
-        attr = request.args.get(ATTR)
+        # get the attr from the request
+        attr = self._get_attr_from_request(request)
+
+        # start with specific defaults for that attr, if it exist, or an empty dict if not
         input_dict = self.dflt_spec.get(attr, {})
 
         for source in self.sources:  # loop through sources
@@ -329,5 +335,26 @@ class InputTrans(object):
                     input_dict[argname] = trans_func(val)  # ... convert the val
                 else:  # if there's not...
                     input_dict[argname] = val  # ... just take the val as is
-        input_dict.pop(ATTR, None)
+
+        input_dict.pop(ATTR, None)  # in case ATTR was in input_dict, remove it.
+
         return attr, input_dict
+
+
+re_type = type(re.compile('.'))
+
+
+class InputTransWithAttrInURL(InputTrans):
+    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS), attr_from_url='(\w+)/$'):
+        super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
+        if not callable(attr_from_url):
+            if isinstance(attr_from_url, basestring):
+                attr_from_url = lambda url: re.compile(attr_from_url)
+            if isinstance(attr_from_url, re_type):
+                attr_from_url = lambda url: attr_from_url.search(url).group(1)
+            else:
+                raise TypeError("attr_from_url must be a callable or a (token matching) regular expression.")
+        self.attr_from_url = attr_from_url
+
+    def _get_attr_from_request(self, request):
+        return self.attr_from_url(request.url)

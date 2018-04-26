@@ -22,15 +22,22 @@ def route_wrapper(route_ow, route_name=None):
     return route_func
 
 
-def mk_app(route_func_list, app_name):
-    route_func_list = map(route_wrapper, route_func_list)
+def mk_app(routes, app_name):
 
-    app = Flask(__name__)
+    if isinstance(routes, dict):
+        _routes = list()
+        for route_name, route_ow in routes.items():
+            _routes.append(route_wrapper(route_ow, route_name))
+        routes = _routes
+    else:
+        routes = map(route_wrapper, routes)
+
+    app = Flask(app_name)
     app.config['JSON_AS_ASCII'] = False
     CORS(app)
 
-    for route_func in route_func_list:
-        app.route("/" + route_func.__name__ + "/", methods=['GET', 'POST'])(route_func)
+    for route_func in routes:
+        app.route(route_func.__name__, methods=['GET', 'POST'])(route_func)
 
     this_logger = logger.init_logger(name=app_name, tags=[app_name, 'api'])
 

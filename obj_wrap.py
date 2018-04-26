@@ -30,7 +30,6 @@ class ObjWrap(object):
                  obj_constructor_arg_names=None,  # used to determine the params of the object constructors
                  permissible_attr=None,
                  input_trans=None,  # input processing: Callable specifying how to prepare arguments for methods
-                 # obj_wrap=None,
                  output_trans=None,  # output processing: Function to convert output
                  name=None,
                  debug=0):
@@ -54,7 +53,8 @@ class ObjWrap(object):
         :param permissible_attr: a boolean function that specifies whether an attr is allowed to be accessed
             Usually constructed using PermissibleAttr class.
         :param input_trans: None (default) or a callable that takes an attr (string) and a request object, and returns
-            a {argname: val, ...} input_dict. That is, it takes care both of extracting the (argname, val) pairs from
+            a (attr, kwargs) pair, where kwargs is a {argname: val, ...} input_dict.
+            That is, it takes care both of extracting the attr and the (argname, val) pairs from
             request and converting the raw val (i.e. in the format given by request (often a string)) into the python
             type that the underlying function (obj specified by attr) expects.
             Note the input_trans is usually constructed with a function factory class that uses it's parameters to
