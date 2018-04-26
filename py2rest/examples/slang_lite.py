@@ -1,10 +1,10 @@
 from __future__ import division
 
 import os
+from flask import jsonify
+from oto.misc.single_wf_snip_analysis import TaggedWaveformAnalysisForWS
 
-from oto.misc.single_wf_snip_analysis import TaggedWaveformAnalysisForWS, DFLT_SR, DFLT_TILE_SIZE_FRM, DFLT_CHK_SIZE_FRM
-
-from py2api.constants import _ARGNAME, _ATTR
+from py2api.constants import _ARGNAME, _ELSE
 from py2api.py2rest.obj_wrap import WebObjWrapper
 from py2api.py2rest.input_trans import InputTrans
 from py2api.output_trans import OutputTrans
@@ -38,7 +38,7 @@ input_trans = InputTrans(
         }
     })
 
-output_trans = OutputTrans(lambda x: {'_result': x})
+output_trans = OutputTrans({_ELSE: lambda x: jsonify({'_result': x})})
 
 # wrapper ##############################################################################################################
 slang_lite = WebObjWrapper(obj_constructor=TaggedWaveformAnalysisForWS,

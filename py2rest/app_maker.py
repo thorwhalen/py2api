@@ -12,7 +12,7 @@ from oto.pj.stag.util.logging_utils import logger
 def route_wrapper(route_ow, route_name=None):
     def route_func():
         try:
-            return jsonify(route_ow(request))
+            return route_ow(request)
         except Exception as e:
             raise  # if _handle_error didn't raise anything specific
 

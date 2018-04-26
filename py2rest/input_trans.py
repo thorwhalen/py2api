@@ -349,7 +349,7 @@ class InputTransWithAttrInURL(InputTrans):
         super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, basestring):
-                attr_from_url = lambda url: re.compile(attr_from_url)
+                attr_from_url = re.compile(attr_from_url)
             if isinstance(attr_from_url, re_type):
                 attr_from_url = lambda url: attr_from_url.search(url).group(1)
             else:
