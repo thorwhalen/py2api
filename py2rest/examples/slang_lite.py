@@ -55,7 +55,7 @@ route_func_list = [slang_lite]
 
 module_name, _ = os.path.splitext(os.path.basename(__file__))
 
-app = mk_app(route_func_list, app_name=module_name)
+app = mk_app(app_name=module_name, routes=route_func_list)
 
 if __name__ == "__main__":
     app_run_kwargs = dflt_run_app_kwargs()

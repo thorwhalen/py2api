@@ -10,40 +10,7 @@ from py2api.py2rest.constants import FILE_FIELD
 
 # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
 
-def extract_kwargs_from_web_request(request, convert_arg=None, file_var=FILE_FIELD):
-    if convert_arg is None:
-        convert_arg = {}
-    kwargs = dict()
-    for k in request.args.keys():
-        if k in convert_arg:
-            if 'default' in convert_arg[k]:
-                kwargs[k] = request.args.get(k,
-                                             type=convert_arg[k].get('type', str),
-                                             default=convert_arg[k]['default'])
-            else:
-                kwargs[k] = request.args.get(k, type=convert_arg[k].get('type', str))
-        else:
-            kwargs[k] = request.args.get(k)
-    if request.json is not None:
-        kwargs = dict(kwargs, **request.json)
-    if 'file' in request.files:
-        kwargs[file_var] = request.files['file']
-    return kwargs
-
-
 class WebObjWrapper(ObjWrap):
-
-    def extract_kwargs_from_request(self, request):
-        """
-        Translate the flask request object into a dict, taking first the contents of request.arg,
-        converting them to a type if the name is listed in the convert_arg property, and assigning a default value
-        (if specified bu convert_arg), and then updating with the contents of request.json
-        :param request: the flask request object
-        :return: a dict of kwargs corresponding to the union of post and get arguments
-        """
-        kwargs = extract_kwargs_from_web_request(request, convert_arg=self.input_trans)
-
-        return dict(kwargs)
 
     @classmethod
     def with_lru_cache(cls,

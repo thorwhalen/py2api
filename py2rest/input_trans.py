@@ -24,12 +24,12 @@ def _preprocess_trans_dict(trans_dict):
 
 def get_request_data_from_source(request, source):
     if source == _JSON:
-        if hasattr(request, 'json'):
+        if hasattr(request, 'json') and request.json:
             return request.json.items()
         else:
             return {}
     elif source == _ARGS:
-        if hasattr(request, 'args'):
+        if hasattr(request, 'args') and request.args:
             return request.args.items()
         else:
             return {}
@@ -345,16 +345,29 @@ re_type = type(re.compile('.'))
 
 
 class InputTransWithAttrInURL(InputTrans):
+    """
+    Version of (py2rest) InputTrans that gets its attr from the url itself.
+    """
     def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS), attr_from_url='(\w+)/$'):
         super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, basestring):
-                attr_from_url = re.compile(attr_from_url)
-            if isinstance(attr_from_url, re_type):
-                attr_from_url = lambda url: attr_from_url.search(url).group(1)
+                _attr_from_url = re.compile(attr_from_url)
+            elif isinstance(attr_from_url, re_type):
+                _attr_from_url = attr_from_url
             else:
                 raise TypeError("attr_from_url must be a callable or a (token matching) regular expression.")
-        self.attr_from_url = attr_from_url
+
+            def __attr_from_url(url):
+                m = _attr_from_url.search(url)
+                if m:
+                    return m.group(1)
+                else:
+                    raise ValueError("Couldn't parse out an attr from this url: {}".format(url))
+
+            self.attr_from_url = __attr_from_url
+        else:
+            self.attr_from_url = attr_from_url
 
     def _get_attr_from_request(self, request):
         return self.attr_from_url(request.url)

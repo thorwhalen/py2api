@@ -18,26 +18,20 @@ def route_wrapper(route_ow, route_name=None):
 
     if route_name is None:
         route_name = route_ow.__name__
-    route_func.__name__ = route_name
+    route_func.__name__ =  route_name
     return route_func
 
 
-def mk_app(routes, app_name):
-
-    if isinstance(routes, dict):
-        _routes = list()
-        for route_name, route_ow in routes.items():
-            _routes.append(route_wrapper(route_ow, route_name))
-        routes = _routes
-    else:
-        routes = map(route_wrapper, routes)
-
+def mk_app(app_name, routes=None, app_config=None, cors=True):
     app = Flask(app_name)
-    app.config['JSON_AS_ASCII'] = False
-    CORS(app)
-
-    for route_func in routes:
-        app.route(route_func.__name__, methods=['GET', 'POST'])(route_func)
+    if app_config is None:
+        app_config = {'JSON_AS_ASCII': False}
+    for k, v in app_config.items():
+        app.config[k] = v
+    if cors:
+        if cors is True:
+            cors = {}
+        CORS(app, **cors)
 
     this_logger = logger.init_logger(name=app_name, tags=[app_name, 'api'])
 
@@ -56,6 +50,27 @@ def mk_app(routes, app_name):
         response.status_code = error.status_code
         this_logger.exception('{} ClientError default catch: Exception with stack trace!'.format(app_name))
         return response
+
+    if routes:
+        app = add_routes_to_app(app, routes)
+
+    return app
+
+
+def add_routes_to_app(app, routes):
+    _routes = list()
+    if isinstance(routes, dict):
+        for route_name, route_ow in routes.items():
+            _routes.append(route_wrapper(route_ow, route_name=route_name))
+        routes = _routes
+    else:
+        for route_ow in routes:
+            _routes.append(route_wrapper(route_ow))
+        routes = _routes
+
+    for route_func in routes:
+        print route_func.__name__
+        app.route(route_func.__name__, methods=['GET', 'POST'])(route_func)
 
     return app
 
