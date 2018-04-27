@@ -7,6 +7,7 @@ class OutputTrans(object):
     """
 
     """
+
     def __init__(self, trans_spec=None):
         """
         An output transformer builder.
@@ -64,6 +65,8 @@ class OutputTrans(object):
         """
         if trans_spec is None:
             trans_spec = {}
+        elif callable(trans_spec):
+            trans_spec = {_ELSE: trans_spec}
         self.trans_spec = trans_spec
 
     def search_trans_func(self, attr, val, trans_spec, output_trans=None):

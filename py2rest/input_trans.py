@@ -231,8 +231,9 @@ class InputTrans(object):
         self.dflt_spec = dflt_spec
         self.sources = sources
 
-    def _get_val_from_arg(self, arg, attr):
-        pass
+    @classmethod
+    def from_argname_trans_dict(cls, argname_trans_dict):
+        return cls(trans_spec={_ARGNAME: argname_trans_dict})
 
     def search_trans_func(self, attr, argname, val, trans_spec, source=None):
         trans_func = TRANS_NOT_FOUND  # fallback default (i.e. "found nothing")
@@ -329,6 +330,8 @@ class InputTrans(object):
         for source in self.sources:  # loop through sources
             request_data = get_request_data_from_source(request, source)  # get the data (dict) of this source
             for argname, val in request_data:  # loop through the (arg, val) pairs of this data...
+                if argname == ATTR:
+                    continue
                 # ... and see if there's a trans_func to convert the val
                 trans_func = self.search_trans_func(attr, argname, val, trans_spec=self.trans_spec, source=source)
                 if trans_func is not TRANS_NOT_FOUND:  # if there is...

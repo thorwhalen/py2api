@@ -22,7 +22,7 @@ class WebObjWrapper(ObjWrap):
                        output_trans=None,
                        debug=0):
         return cls.with_decorators(
-            constructor_decorator=lru_cache(maxsize=cache_size),
+            constructor_decorator=lru_cache(cache_size=cache_size),
             obj_constructor=obj_constructor,
             obj_constructor_arg_names=obj_constructor_arg_names,
             permissible_attr=permissible_attr,
