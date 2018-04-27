@@ -47,7 +47,7 @@ def enhanced_docstr(func):
     """
     argspec = getargspec(func)
 
-    dflts = argspec.defaults
+    dflts = argspec.defaults or list()
     dflts = map(_strigify_val, dflts)
 
     args_strings = list()
@@ -62,7 +62,10 @@ def enhanced_docstr(func):
     func_spec = "{funcname}({args_strings})".format(
         funcname=func.__name__, args_strings=", ".join(args_strings))
 
-    return func_spec + '\n' + func.__doc__
+    if func.__doc__ is not None:
+        return "{}\n{}".format(func_spec, func.__doc__)
+    else:
+        return func_spec
 
 
 class PermissibleAttr(object):

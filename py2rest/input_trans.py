@@ -348,7 +348,7 @@ class InputTransWithAttrInURL(InputTrans):
     """
     Version of (py2rest) InputTrans that gets its attr from the url itself.
     """
-    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS), attr_from_url='(\w+)/$'):
+    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS), attr_from_url='(\w+)$'):
         super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, basestring):

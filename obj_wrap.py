@@ -138,14 +138,14 @@ class ObjWrap(object):
         # get an input_dict from the request, and format it's values (might depend on attr, so passed along)
         attr, input_dict = self.input_trans(request)
 
+        if self.debug:
+            print("attr={}, input_dict = {}".format(attr, input_dict))
+
         # make sure attr is there, and is permissible
         if attr is None:
             raise MissingAttribute()
         elif not self.permissible_attr(attr):
             raise ForbiddenAttribute(attr)
-
-        if self.debug:
-            print("input_dict = {}".format(input_dict))
 
         ###### Get or construct the attribute object being accessed ####################################################
         # pop off any arguments that are meant to be for the base obj (module, function, class instance) constructor
@@ -159,6 +159,7 @@ class ObjWrap(object):
 
         ###### Handle some special args ################################################################################
         _help = input_dict.pop(_HELP, None)
+
         if _help:
             return enhanced_docstr(obj_attr)
 
