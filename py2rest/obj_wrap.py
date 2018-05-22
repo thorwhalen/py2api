@@ -11,7 +11,6 @@ from py2api.py2rest.constants import FILE_FIELD
 # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.
 
 class WebObjWrapper(ObjWrap):
-
     @classmethod
     def with_lru_cache(cls,
                        cache_size=DFLT_LRU_CACHE_SIZE,
@@ -20,6 +19,7 @@ class WebObjWrapper(ObjWrap):
                        input_trans=None,
                        permissible_attr=None,  # what attributes are allowed to be accessed
                        output_trans=None,
+                       name=None,
                        debug=0):
         return cls.with_decorators(
             constructor_decorator=lru_cache(cache_size=cache_size),
@@ -28,5 +28,6 @@ class WebObjWrapper(ObjWrap):
             permissible_attr=permissible_attr,
             input_trans=input_trans,
             output_trans=output_trans,
+            name=name,
             debug=debug
         )

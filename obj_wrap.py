@@ -191,6 +191,7 @@ class ObjWrap(object):
                         permissible_attr=None,
                         input_trans=None,
                         output_trans=default_to_jdict,
+                        name=None,
                         debug=0):
         if constructor_decorator is not None:
             wrapped_obj_constructor = constructor_decorator(obj_constructor)
@@ -205,6 +206,7 @@ class ObjWrap(object):
                    permissible_attr=permissible_attr,
                    input_trans=input_trans,
                    output_trans=output_trans,
+                   name=name,
                    debug=debug)
 
 
