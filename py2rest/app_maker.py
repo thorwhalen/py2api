@@ -25,7 +25,7 @@ class ClientError(Exception):
 def route_wrapper(route_ow, route_name=None):
     def route_func(attr):
         try:
-            return route_ow(request)
+            return route_ow(attr, request)
         except Exception as e:
             raise  # if _handle_error didn't raise anything specific
 
@@ -82,10 +82,7 @@ def add_routes_to_app(app, routes):
         routes = _routes
 
     for route_func in routes:
-        name = route_func.__name__
-        if not name.endswith('/<attr>'):
-            name = name + '/<attr>'
-        app.route(name, methods=['GET', 'POST'])(route_func)
+        app.route(route_func.__name__, methods=['GET', 'POST'])(route_func)
 
     return app
 
