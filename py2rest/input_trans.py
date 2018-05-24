@@ -311,18 +311,16 @@ class InputTrans(object):
         else:
             return TRANS_NOT_FOUND
 
-    def _get_attr_from_request(self, request):
-        return request.args.get(ATTR)
+    # def _get_attr_from_request(self, request):
+    #     return request.args.get(ATTR)
 
-    def __call__(self, request):
+    def __call__(self, attr, request):
         """
-        Extract attr and data to call it with (converting the request data for the given attribute
+        Extract data to call it with (converting the request data for the given attribute
         (including defaults if any are specified)
         :param request: A flask Request object
-        :return: attr, input_dict, where input_dict is an {arg: val, ...} dict
+        :return: input_dict, where input_dict is an {arg: val, ...} dict
         """
-        # get the attr from the request
-        attr = self._get_attr_from_request(request)
 
         # start with specific defaults for that attr, if it exist, or an empty dict if not
         input_dict = self.dflt_spec.get(attr, {})
@@ -341,7 +339,7 @@ class InputTrans(object):
 
         input_dict.pop(ATTR, None)  # in case ATTR was in input_dict, remove it.
 
-        return attr, input_dict
+        return input_dict
 
 
 re_type = type(re.compile('.'))
