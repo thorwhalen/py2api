@@ -123,7 +123,7 @@ class ObjWrap(object):
         # ... so get the leaf (attr) object
         return get_attr_recursively(obj_spec, attr)  # get the (possibly nested) attribute object
 
-    def __call__(self, attr, request):
+    def __call__(self, request, **route_args):
         """
         Translates a request to an object access (get property value or call object method).
             Uses self.get_kwargs_from_request(request) to get a dict of kwargs from request.arg
@@ -142,7 +142,7 @@ class ObjWrap(object):
 
         ###### Extract the needed data from request and format values ##################################################
         # get an input_data from the request, and format it's values (might depend on attr, so passed along)
-        input_data = self.input_trans(attr, request)
+        attr, input_data = self.input_trans(attr, request, **route_args)
 
         if self.debug:
             print("attr={}, input_data = {}".format(attr, input_data))
