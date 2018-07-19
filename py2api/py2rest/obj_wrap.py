@@ -1,11 +1,8 @@
 from __future__ import division
 
-from py2api.lru import lru_cache
+from functools import lru_cache
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
-from py2api.obj_wrap import ObjWrap
-from py2api.util import default_to_jdict
-from py2api.constants import ATTR
-from py2api.py2rest.constants import FILE_FIELD
+from py2api import ObjWrap
 
 
 # TODO: "file" is for backcompatibility. Change to "_file" once coordinated.

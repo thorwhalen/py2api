@@ -8,10 +8,10 @@ Many useful utils to extend it's functionality are included elsewhere so as to e
 minimum-necessary code, crucial, for instance, for micro-services.
 """
 
-from py2api.errors import MissingAttribute, ForbiddenAttribute
-from py2api.defaults import DFLT_LRU_CACHE_SIZE
-from py2api.lru import lru_cache
-from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively
+from .errors import MissingAttribute, ForbiddenAttribute
+from .defaults import DFLT_LRU_CACHE_SIZE
+from .lru import lru_cache
+from .util import PermissibleAttr, default_to_jdict, get_attr_recursively
 
 
 ########################################################################################################################
