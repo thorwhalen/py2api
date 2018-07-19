@@ -1,6 +1,6 @@
 from __future__ import division
 
-from py2api.constants import TRANS_NOT_FOUND, _OUTPUT_TRANS, _ATTR, _VALTYPE, _ELSE
+from .constants import TRANS_NOT_FOUND, _OUTPUT_TRANS, _ATTR, _VALTYPE, _ELSE
 
 
 class OutputTrans(object):

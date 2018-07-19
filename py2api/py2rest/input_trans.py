@@ -4,7 +4,7 @@ import re
 
 from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _ELSE
-from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
+from py2api.py2rest.constants import _ARGS, _JSON, _ROUTE, _SOURCE
 
 DFLT_TRANS = {
     _ARGS: {'type': str}
@@ -222,7 +222,7 @@ class InputTrans(object):
      'other_arg': 'another arg'}
     """
 
-    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS)):
+    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE)):
         if trans_spec is None:
             trans_spec = {}
         if dflt_spec is None:
@@ -311,15 +311,17 @@ class InputTrans(object):
         else:
             return TRANS_NOT_FOUND
 
-    def _get_attr_from_request(self, request):
-        return request.args.get(ATTR)
+    def _get_attr_from_request(self, request, **route_args):
+        attr = route_args.get(ATTR)
+        if not attr:
+            attr = request.args.get(ATTR)
 
-    def __call__(self, request):
+    def __call__(self, request, **route_args):
         """
-        Extract attr and data to call it with (converting the request data for the given attribute
+        Extract data to call it with (converting the request data for the given attribute
         (including defaults if any are specified)
         :param request: A flask Request object
-        :return: attr, input_dict, where input_dict is an {arg: val, ...} dict
+        :return: input_dict, where input_dict is an {arg: val, ...} dict
         """
         # get the attr from the request
         attr = self._get_attr_from_request(request)
@@ -328,7 +330,10 @@ class InputTrans(object):
         input_dict = self.dflt_spec.get(attr, {})
 
         for source in self.sources:  # loop through sources
-            request_data = get_request_data_from_source(request, source)  # get the data (dict) of this source
+            if source == _ROUTE:
+                request_data = route_args
+            else:
+                request_data = get_request_data_from_source(request, source)  # get the data (dict) of this source
             for argname, val in request_data:  # loop through the (arg, val) pairs of this data...
                 if argname == ATTR:
                     continue
@@ -341,7 +346,7 @@ class InputTrans(object):
 
         input_dict.pop(ATTR, None)  # in case ATTR was in input_dict, remove it.
 
-        return attr, input_dict
+        return input_dict
 
 
 re_type = type(re.compile('.'))
@@ -351,7 +356,7 @@ class InputTransWithAttrInURL(InputTrans):
     """
     Version of (py2rest) InputTrans that gets its attr from the url itself.
     """
-    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS), attr_from_url='(\w+)$'):
+    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE), attr_from_url='(\w+)$'):
         super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, basestring):

@@ -23,9 +23,9 @@ class ClientError(Exception):
 
 
 def route_wrapper(route_ow, route_name=None):
-    def route_func():
+    def route_func(**route_args):
         try:
-            return route_ow(request)
+            return route_ow(request, **route_args)
         except Exception as e:
             raise  # if _handle_error didn't raise anything specific
 
