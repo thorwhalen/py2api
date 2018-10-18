@@ -12,6 +12,11 @@ from py2api.errors import MissingAttribute, ForbiddenAttribute
 from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively, enhanced_docstr
 from py2api.constants import _OUTPUT_TRANS, _HELP
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 ########################################################################################################################
 # Dev Notes
 """
@@ -142,7 +147,8 @@ class ObjWrap(object):
 
         ###### Extract the needed data from request and format values ##################################################
         # get an input_data from the request, and format it's values (might depend on attr, so passed along)
-        attr, input_data = self.input_trans(attr, request, **route_args)
+
+        attr, input_data = self.input_trans(request, **route_args)
 
         if self.debug:
             print("attr={}, input_data = {}".format(attr, input_data))

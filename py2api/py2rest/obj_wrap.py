@@ -1,6 +1,10 @@
 from __future__ import division
 
-from functools import lru_cache
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
+
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api import ObjWrap
 

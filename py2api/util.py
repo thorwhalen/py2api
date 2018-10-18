@@ -4,7 +4,7 @@ import json
 import re
 from inspect import getargspec
 
-from defaults import DFLT_RESULT_FIELD
+from py2api.defaults import DFLT_RESULT_FIELD
 
 
 def _strigify_val(val):
@@ -18,12 +18,11 @@ def _strigify_val(val):
     :return:
     """
     if isinstance(val, basestring):
-        return '"' + val + '"'
-    elif callable(val) or isinstance(val, type):
+        return repr(val)
+    elif hasattr(val, "__name__"):
         return val.__name__
     else:
-        return "{}".format(val)
-
+        return str(val)
 
 def enhanced_docstr(func):
     """
@@ -47,8 +46,7 @@ def enhanced_docstr(func):
     """
     argspec = getargspec(func)
 
-    dflts = argspec.defaults or list()
-    dflts = map(_strigify_val, dflts)
+    dflts = [_strigify_val(d) for d in argspec.defaults or list()]
 
     args_strings = list()
     args_strings += argspec.args[:-len(dflts)]
@@ -63,7 +61,7 @@ def enhanced_docstr(func):
         funcname=func.__name__, args_strings=", ".join(args_strings))
 
     if func.__doc__ is not None:
-        return "{}\n{}".format(func_spec, func.__doc__)
+        return "\n".join((func_spec, func.__doc__))
     else:
         return func_spec
 
@@ -90,7 +88,7 @@ class PermissibleAttr(object):
         """
         self.permissible_attrs = permissible_attrs
         if not permissible_attrs:  # we don't want to allow any attributes
-            permissible_attrs = re.compile('0')  # no attribute can have that pattern (can't start with a numerical)
+            permissible_attrs = None
         else:
             if isinstance(permissible_attrs, (list, tuple)):
                 permissible_attrs = {'include': permissible_attrs}
@@ -101,7 +99,7 @@ class PermissibleAttr(object):
         self.permissible_attr_pattern = permissible_attrs
 
     def __call__(self, attr):
-        return bool(self.permissible_attr_pattern.match(attr))
+        return bool(self.permissible_attr_pattern is not None and self.permissible_attr_pattern.match(attr))
 
 
 def obj_str_from_obj(obj):
@@ -144,43 +142,10 @@ def get_pattern_from_attr_permissions_dict(attr_permissions):
     he.wants.me: False
     """
 
-    s = ""
+    incls = "|".join(attr_permissions.get('include', []))
+    excls = "|".join(attr_permissions.get('exclude', []))
 
-    # process inclusions
-    corrected_list = []
-    for include in attr_permissions.get('include', []):
-        if not include.endswith('*'):
-            if not include.endswith('$'):
-                include += '$'
-        else:  # ends with "*"
-            if include.endswith('\.*'):
-                # assume that's not what the user meant, so change
-                include = include[:-3] + '.*'
-            elif include[-2] != '.':
-                # assume that's not what the user meant, so change
-                include = include[:-1] + '.*'
-        corrected_list.append(include)
-    s += '|'.join(corrected_list)
-
-    # process exclusions
-    corrected_list = []
-    for exclude in attr_permissions.get('exclude', []):
-        if not exclude.endswith('$') and not exclude.endswith('*'):
-            # add to exclude all subpaths if not explicitly ending with "$"
-            exclude += '.*'
-        else:  # ends with "*"
-            if exclude.endswith('\.*'):
-                # assume that's not what the user meant, so change
-                exclude = exclude[:-3] + '.*'
-            elif exclude[-2] != '.':
-                # assume that's not what the user meant, so change
-                exclude = exclude[:-1] + '.*'
-        corrected_list.append(exclude)
-    if corrected_list:
-        s += '(?!' + '|'.join(corrected_list) + ')'
-
-    return re.compile(s)
-
+    return re.compile(incls + '(?!%s)' % '|'.join(excls) if excls else '')
 
 def default_to_jdict(result, result_field=DFLT_RESULT_FIELD):
     if isinstance(result, list):

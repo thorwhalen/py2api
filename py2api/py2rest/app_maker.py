@@ -4,43 +4,24 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError
 from platform import system as this_system
-
-
-class ClientError(Exception):
-    status_code = 400
-
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
-
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
+from py2api.errors import ClientError
 
 def route_wrapper(route_ow, route_name=None):
     def route_func(**route_args):
-        try:
-            return route_ow(request, **route_args)
-        except Exception as e:
-            raise  # if _handle_error didn't raise anything specific
+        return route_ow(request, **route_args)
 
-    if route_name is None:
-        route_name = route_ow.__name__
-    route_func.__name__ = route_name
+    route_func.__name__ = route_ow.__name__ if route_name is None else route_name
     return route_func
 
 
 def mk_app(app_name, routes=None, app_config=None, cors=True):
     app = Flask(app_name)
+
     if app_config is None:
         app_config = {'JSON_AS_ASCII': False}
-    for k, v in app_config.items():
-        app.config[k] = v
+
+    app.config.update(app_config)
+
     if cors:
         if cors is True:
             cors = {}
@@ -88,14 +69,8 @@ def add_routes_to_app(app, routes):
 
 
 def dflt_run_app_kwargs():
-    dflt_kwargs = dict()
-
-    dflt_kwargs['host'] = '0.0.0.0'
-    dflt_kwargs['port'] = 5000
-
-    if this_system() == 'Linux':
-        dflt_kwargs['debug'] = 0
-    else:
-        dflt_kwargs['debug'] = 1
-
-    return dflt_kwargs
+    return {
+        "host": "127.0.0.1",
+        "port": 5000,
+        "debug": 0 if this_system() == "Linux" else 1
+        }
