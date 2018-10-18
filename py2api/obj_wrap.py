@@ -89,6 +89,7 @@ class ObjWrap(object):
         if output_trans is None:
             def _output_trans(result, *args, **kwargs):
                 return result
+
             self.output_trans = _output_trans
         else:
             assert callable(output_trans), "input_trans needs to be a callable"
