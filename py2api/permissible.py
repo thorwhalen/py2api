@@ -34,6 +34,10 @@ class MatchAttr(object):
 
     __slots__ = ["_at"]
 
+    @classmethod
+    def all(cls):
+        return cls("^.*$")
+
     def __new__(cls, attr, *args, **kwargs):
         """If this is already a MatchAttr, return it. Otherwise, create one.
 
@@ -83,31 +87,14 @@ class MatchAttr(object):
         else:
             return False
 
-class PermitAttr(MatchAttr):
-    """Permits attributes matching our pattern."""
-
-    pass
-
-class DenyAttr(MatchAttr):
-    """Denies attributes matching our pattern."""
-
-    @classmethod
-    def all(cls):
-        return cls("^.*$")
-
-    def __call__(self, attr):
-        """Inverts the match of our pattern."""
-
-        return not super(DenyAttr, self).__call__(attr)
-
 class AttributeFilter(object):
     """Filter calls by attribute name.
 
     This will process a collection of attribute filters."""
 
-    __slots__ = ["_filts"]
+    __slots__ = ["_a", "_d"]
 
-    def __init__(self, filters=(DenyAttr.all(),), allow=(), deny=()):
+    def __init__(self, allow=(), deny=(MatchAttr.all(),)):
         """Configures an AttributeFilter with the specified filters.
 
         If allow and deny are both empty, this will use the filters
@@ -116,10 +103,8 @@ class AttributeFilter(object):
         deny lists.
         """
 
-        if allow or deny:
-            self._filts = [PermitAttr(a) for a in allow] + [DenyAttr(a) for a in deny]
-        else:
-            self._filts = list(filters)
+        self._a = [MatchAttr(a) for a in allow]
+        self._d = [MatchAttr(a) for a in deny]
 
     def __call__(self, f):
         """Decorate a method to filter access based on attribute name.
@@ -128,9 +113,10 @@ class AttributeFilter(object):
 
         @wraps(f)
         def g(obj, attr):
-            if all(t(attr) for t in self._filts):
+            if any(d(attr) for d in self._d):
+                raise PermissionDeniedError(obj, attr)
+            elif any(a(attr) for a in self._a):
                 return f(obj, attr)
             else:
                 raise PermissionDeniedError(obj, attr)
-
         return g

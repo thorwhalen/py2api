@@ -6,8 +6,6 @@ import re
 
 from py2api.permissible import (
     MatchAttr,
-    PermitAttr,
-    DenyAttr,
     AttributeFilter,
     PermissionDeniedError)
 
@@ -68,11 +66,11 @@ def test_permit_deny_attr(i_p, i_d):
 
     assume(i_p != i_d)
 
-    p = PermitAttr("^%s$" % i_p)
-    d = DenyAttr("^%s$" % i_d)
+    p = MatchAttr("^%s$" % i_p)
+    d = MatchAttr("^%s$" % i_d)
 
     def pol(attr):
-        return p(attr) and d(attr)
+        return p(attr) and not d(attr)
 
     assert pol(i_p), "Composite policy permits"
     assert not pol(i_d), "Composite policy denies"
@@ -102,13 +100,19 @@ def test_default_deny(attrs):
 def test_allows_denies(allows, denies):
     assume(all(a not in denies for a in allows) and all(d not in allows for d in denies))
 
+    flt = AttributeFilter(allow=("^%s$" % a for a in allows),
+                          deny=("^%s$" % d for d in denies))
+
+    assert(all("^%s$" % a in flt._a for a in allows))
+    assert(all("^%s$" % a in flt._d for a in denies))
+
     class A(object):
-        def __getattr__(self, ATTR):
+        def __getattr__(self, attr):
             return "Hello"
 
     obj = A()
 
-    @AttributeFilter(allow=allows, deny=denies)
+    @flt
     def f(a, attr):
         return getattr(a, attr)
 
