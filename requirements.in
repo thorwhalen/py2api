@@ -1,4 +1,0 @@
-flask
-flask-cors
-pip-tools
-backports.functools_lru_cache

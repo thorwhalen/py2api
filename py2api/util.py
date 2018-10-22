@@ -1,4 +1,4 @@
-from __future__ import division
+pfrom __future__ import division
 
 import json
 import re
@@ -66,40 +66,6 @@ def enhanced_docstr(func):
         return func_spec
 
 
-class PermissibleAttr(object):
-    def __init__(self, permissible_attrs=None):
-        """
-        A class whose objects are callable and play the role of an attribute filter.
-        The use of this class is to construct a function that will allow or disallow specific attributes to be
-        accessed by an ObjWrap.
-        :param permissible_attrs: The specification that determines what attributes are allowed to be accessed.
-            Note that specifications must be
-            complete (i.e. describing the whole attribute path, not just a subset. For example, if you want
-            to have access to this.given.thing you, specifying r"this\.given" won't be enough.
-            If you're specifying with a regular expression for example, need to specify
-            "this\.given.thing" or "this\.given\..*" (the latter giving access to all children of this.given.).
-            Allowed formats:
-                a list of patterns to include (most common)
-                a re.compiled pattern
-                a string (that will be passed on to re.compile()
-                a dict with either
-                    an "include", pointing to a list of patterns to include
-                    an "exclude", pointing to a list of patterns to exclude
-        """
-        self.permissible_attrs = permissible_attrs
-        if not permissible_attrs:  # we don't want to allow any attributes
-            permissible_attrs = None
-        else:
-            if isinstance(permissible_attrs, (list, tuple)):
-                permissible_attrs = {'include': permissible_attrs}
-            if isinstance(permissible_attrs, dict):
-                permissible_attrs = get_pattern_from_attr_permissions_dict(permissible_attrs)
-            else:
-                permissible_attrs = re.compile(permissible_attrs)
-        self.permissible_attr_pattern = permissible_attrs
-
-    def __call__(self, attr):
-        return bool(self.permissible_attr_pattern is not None and self.permissible_attr_pattern.match(attr))
 
 
 def obj_str_from_obj(obj):
@@ -112,40 +78,6 @@ def obj_str_from_obj(obj):
 def argname_based_specs_from(specs):
     pass
 
-
-def get_pattern_from_attr_permissions_dict(attr_permissions):
-    """
-    Construct a compiled regular expression from a permissions dict containing a list of what to include and exclude.
-    Will be used in ObjWrapper if permissible_attr_pattern is a dict.
-    Note that the function enforces certain patterns (like inclusions ending with $ unless they end with *, etc.
-    What is not checked for is that the "." was meant, or if it was "\." that was meant.
-    This shouldn't be a problem in most cases, and hey! It's to the user to know regular expressions!
-    :param attr_permissions: A dict of the format {'include': INCLUSION_LIST, 'exclude': EXCLUSION_LIST}.
-        Both 'include' and 'exclude' are optional, and their lists can be empty.
-    :return: a re.compile object
-
-    >>> attr_permissions = {
-    ...     'include': ['i.want.this', 'he.wants.that'],
-    ...     'exclude': ['i.want', 'he.wants', 'and.definitely.not.this']
-    ... }
-    >>> r = get_pattern_from_attr_permissions_dict(attr_permissions)
-    >>> test = ['i.want.this', 'i.want.this.too', 'he.wants.that', 'he.wants.that.other.thing',
-    ...         'i.want.ice.cream', 'he.wants.me'
-    ...        ]
-    >>> for t in test:
-    ...     print("{}: {}".format(t, bool(r.match(t))))
-    i.want.this: True
-    i.want.this.too: False
-    he.wants.that: True
-    he.wants.that.other.thing: False
-    i.want.ice.cream: False
-    he.wants.me: False
-    """
-
-    incls = "|".join(attr_permissions.get('include', []))
-    excls = "|".join(attr_permissions.get('exclude', []))
-
-    return re.compile(incls + '(?!%s)' % '|'.join(excls) if excls else '')
 
 def default_to_jdict(result, result_field=DFLT_RESULT_FIELD):
     if isinstance(result, list):
