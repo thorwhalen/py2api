@@ -1,5 +1,6 @@
-Flask==1.0.2
+backports.functools_lru_cache
+enum34
 Flask-Cors==3.0.6
-backports.functools_lru_cache==1.5
-pip-tools==3.1.0
-pip-compile-multi==1.2.1
+Flask==1.0.2
+pip-compile-multi
+pip-tools
