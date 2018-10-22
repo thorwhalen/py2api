@@ -113,9 +113,8 @@ class AttributeFilter(object):
 
         @wraps(f)
         def g(obj, attr):
-            if any(d(attr) for d in self._d):
-                raise PermissionDeniedError(obj, attr)
-            elif any(a(attr) for a in self._a):
+            if (not any(d(attr) for d in self._d) and
+                any(a(attr) for a in self._a)):
                 return f(obj, attr)
             else:
                 raise PermissionDeniedError(obj, attr)
