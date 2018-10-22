@@ -4,7 +4,7 @@
 
 import re
 
-from py2api.permissible import MatchAttr
+from py2api.permissible import MatchAttr, PermitAttr, DenyAttr
 
 from hypothesis import given, assume
 from hypothesis.strategies import text, characters, composite
@@ -18,7 +18,7 @@ def identifier(draw):
     cs = draw(text(alphabet=characters(whitelist_categories="LN",
                                        min_codepoint=0x20,
                                        max_codepoint=0x7f)))
-    return c + cs
+    return "^" + c + cs + "$"
 
 @given(a1=identifier(), a2=identifier())
 def test_match_attr_string(a1, a2):
@@ -31,7 +31,9 @@ def test_match_attr_string(a1, a2):
 
     o = MatchAttr(a2)
 
-    assert m(a1) == True, "Calling MatchAttr on the original attr matches"
+    s1 = a1[1:-1]
+
+    assert m(s1) == True, "Calling MatchAttr on the original attr matches"
     assert m == a1, "MatchAttr == its string "
     assert m == n, "MatchAttrs with same match are equal"
     assert m is n, "MatchAttrs with same match are same"
@@ -49,3 +51,21 @@ def test_match_attr_re(a1, a2):
 
     assert m_a._at == m, "MatchAttr._at == its re"
     assert MatchAttr(m) == m, "MatchAttr == its re"
+
+@given(i_p=identifier(), i_d=identifier())
+def test_permit_deny_attr(i_p, i_d):
+    """Check permitting and denying attributes with composite policies"""
+
+    assume(i_p != i_d)
+
+    s_p = i_p[1:-1]
+    s_d = i_d[1:-1]
+
+    p = PermitAttr(i_p)
+    d = DenyAttr(i_d)
+
+    def pol(attr):
+        return p(attr) and d(attr)
+
+    assert pol(s_p), "Composite policy permits"
+    assert not pol(s_d), "Composite policy denies"

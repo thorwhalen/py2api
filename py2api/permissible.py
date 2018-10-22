@@ -84,7 +84,7 @@ class MatchAttr(object):
         else:
             raise TypeError("%s called with invalid attr: %s" % (cls, attr))
 
-        k = (attr, r)
+        k = (cls, r)
 
         if k not in cls._matches_:
             cls._matches_[k] = object.__new__(cls)
@@ -114,6 +114,18 @@ class MatchAttr(object):
         else:
             return False
 
+class PermitAttr(MatchAttr):
+    """Permits attributes matching our pattern."""
+
+    pass
+
+class DenyAttr(MatchAttr):
+    """Denies attributes matching our pattern."""
+
+    def __call__(self, attr):
+        """Inverts the match of our pattern."""
+
+        return not super(DenyAttr, self).__call__(attr)
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
     """
