@@ -4,11 +4,26 @@
 
 import re
 from collections import defaultdict
+from functools import wraps
 
 try:
     basestring
 except:
     basestring = str
+
+__all__ = ["PermissionDeniedError", "PermitAttr", "DenyAttr", "AttributeFilter"]
+
+class PermissionDeniedError(Exception):
+    """Attribute access was forbidden."""
+
+    def __init__(self, o, a, *args, **kwargs):
+        super(PermissionDeniedError, self).__init__(*args, **kwargs)
+
+        self.obj = o
+        self.attr = a
+
+    def __str__(self):
+        return "PermissionDeniedError: %s.%s" % (str(self.obj), self.attr)
 
 class MatchAttr(object):
     """A callable that will match an attribute pattern."""
@@ -76,10 +91,49 @@ class PermitAttr(MatchAttr):
 class DenyAttr(MatchAttr):
     """Denies attributes matching our pattern."""
 
+    @classmethod
+    def all(cls):
+        return cls("^.*$")
+
     def __call__(self, attr):
         """Inverts the match of our pattern."""
 
         return not super(DenyAttr, self).__call__(attr)
+
+class AttributeFilter(object):
+    """Filter calls by attribute name.
+
+    This will process a collection of attribute filters."""
+
+    __slots__ = ["_filts"]
+
+    def __init__(self, filters=(DenyAttr.all(),), allow=(), deny=()):
+        """Configures an AttributeFilter with the specified filters.
+
+        If allow and deny are both empty, this will use the filters
+        instead, which must all be instances of MatchAttr. Otherwise,
+        PermitAttr and DenyAttr instances are created from the allow and
+        deny lists.
+        """
+
+        if allow or deny:
+            self._filts = [PermitAttr(a) for a in allow] + [DenyAttr(a) for a in deny]
+        else:
+            self._filts = list(filters)
+
+    def __call__(self, f):
+        """Decorate a method to filter access based on attribute name.
+
+        This can wrap __getattr__ to protect or expose attribute access.."""
+
+        @wraps(f)
+        def g(obj, attr):
+            if all(t(attr) for t in self._filts):
+                return f(obj, attr)
+            else:
+                raise PermissionDeniedError(obj, attr)
+
+        return g
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
     """

@@ -4,10 +4,16 @@
 
 import re
 
-from py2api.permissible import MatchAttr, PermitAttr, DenyAttr
+from py2api.permissible import (
+    MatchAttr,
+    PermitAttr,
+    DenyAttr,
+    AttributeFilter,
+    PermissionDeniedError)
 
 from hypothesis import given, assume
-from hypothesis.strategies import text, characters, composite
+from hypothesis.strategies import text, characters, composite, lists
+from pytest import raises
 
 @composite
 def identifier(draw):
@@ -69,3 +75,24 @@ def test_permit_deny_attr(i_p, i_d):
 
     assert pol(s_p), "Composite policy permits"
     assert not pol(s_d), "Composite policy denies"
+
+@given(flts=lists(identifier(), min_size=1))
+def test_default_deny(flts):
+    """Check that the default attribute policy is deny_all"""
+
+    attrs = [f[1:-1] for f in flts]
+    pol = AttributeFilter()
+
+    class A(object):
+        def __getattr__(self, attr):
+            return "hello"
+
+    obj = A()
+
+    @pol
+    def f(a, attr):
+        return getattr(a, attr)
+
+    for attr in attrs:
+        with raises(PermissionDeniedError):
+            assert not f(obj, attr) == "hello"
