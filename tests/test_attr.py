@@ -24,7 +24,7 @@ def identifier(draw):
     cs = draw(text(alphabet=characters(whitelist_categories="LN",
                                        min_codepoint=0x20,
                                        max_codepoint=0x7f)))
-    return "^" + c + cs + "$"
+    return c + cs
 
 @given(a1=identifier(), a2=identifier())
 def test_match_attr_string(a1, a2):
@@ -32,15 +32,16 @@ def test_match_attr_string(a1, a2):
 
     assume(a1 != a2)
 
-    m = MatchAttr(a1)
-    n = MatchAttr(a1)
+    f1 = "^%s$" % a1
+    f2 = "^%s$" % a2
 
-    o = MatchAttr(a2)
+    m = MatchAttr(f1)
+    n = MatchAttr(f1)
 
-    s1 = a1[1:-1]
+    o = MatchAttr(f2)
 
-    assert m(s1) == True, "Calling MatchAttr on the original attr matches"
-    assert m == a1, "MatchAttr == its string "
+    assert m(a1) == True, "Calling MatchAttr on the original attr matches"
+    assert m == f1, "MatchAttr == its string "
     assert m == n, "MatchAttrs with same match are equal"
     assert m is n, "MatchAttrs with same match are same"
 
@@ -48,10 +49,13 @@ def test_match_attr_string(a1, a2):
 
 @given(a1=identifier(), a2=identifier())
 def test_match_attr_re(a1, a2):
-
+    """Check creating MatchAttr from a regular expression."""
     assume(a1 != a2)
 
-    m = re.compile(a1)
+    f1 = "^%s$" % a1
+    f2 = "^%s$" % a2
+
+    m = re.compile(f1)
 
     m_a = MatchAttr(m)
 
@@ -64,23 +68,19 @@ def test_permit_deny_attr(i_p, i_d):
 
     assume(i_p != i_d)
 
-    s_p = i_p[1:-1]
-    s_d = i_d[1:-1]
-
-    p = PermitAttr(i_p)
-    d = DenyAttr(i_d)
+    p = PermitAttr("^%s$" % i_p)
+    d = DenyAttr("^%s$" % i_d)
 
     def pol(attr):
         return p(attr) and d(attr)
 
-    assert pol(s_p), "Composite policy permits"
-    assert not pol(s_d), "Composite policy denies"
+    assert pol(i_p), "Composite policy permits"
+    assert not pol(i_d), "Composite policy denies"
 
-@given(flts=lists(identifier(), min_size=1))
-def test_default_deny(flts):
+@given(attrs=lists(identifier(), min_size=1))
+def test_default_deny(attrs):
     """Check that the default attribute policy is deny_all"""
 
-    attrs = [f[1:-1] for f in flts]
     pol = AttributeFilter()
 
     class A(object):

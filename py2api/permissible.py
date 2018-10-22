@@ -134,35 +134,3 @@ class AttributeFilter(object):
                 raise PermissionDeniedError(obj, attr)
 
         return g
-
-def get_pattern_from_attr_permissions_dict(attr_permissions):
-    """
-    Construct a compiled regular expression from a permissions dict containing a list of what to include and exclude.
-    Will be used in ObjWrapper if permissible_attr_pattern is a dict.
-
-    :param attr_permissions: A dict of the format {'include': INCLUSION_LIST, 'exclude': EXCLUSION_LIST}.
-        Both 'include' and 'exclude' are optional, and their lists can be empty.
-    :return: a re.compile object
-
-    >>> attr_permissions = {
-    ...     'include': ['i.want.this', 'he.wants.that'],
-    ...     'exclude': ['i.want', 'he.wants', 'and.definitely.not.this']
-    ... }
-    >>> r = get_pattern_from_attr_permissions_dict(attr_permissions)
-    >>> test = ['i.want.this', 'i.want.this.too', 'he.wants.that', 'he.wants.that.other.thing',
-    ...         'i.want.ice.cream', 'he.wants.me'
-    ...        ]
-    >>> for t in test:
-    ...     print("{}: {}".format(t, bool(r.match(t))))
-    i.want.this: True
-    i.want.this.too: False
-    he.wants.that: True
-    he.wants.that.other.thing: False
-    i.want.ice.cream: False
-    he.wants.me: False
-    """
-
-    incls = "|".join(attr_permissions.get('include', []))
-    excls = "|".join(attr_permissions.get('exclude', []))
-
-    return re.compile(incls), re.compile(excls)
