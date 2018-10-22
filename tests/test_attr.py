@@ -96,3 +96,24 @@ def test_default_deny(attrs):
     for attr in attrs:
         with raises(PermissionDeniedError):
             assert not f(obj, attr) == "hello"
+
+@given(allows=lists(identifier(), min_size=1),
+       denies=lists(identifier(), min_size=1))
+def test_allows_denies(allows, denies):
+    assume(all(a not in denies for a in allows) and all(d not in allows for d in denies))
+
+    class A(object):
+        def __getattr__(self, ATTR):
+            return "Hello"
+
+    obj = A()
+
+    @AttributeFilter(allow=allows, deny=denies)
+    def f(a, attr):
+        return getattr(a, attr)
+
+    assert(all(f(obj, allow) == "Hello" for allow in allows))
+
+    for attr in denies:
+        with raises(PermissionDeniedError):
+            assert f(obj, attr) != "Hello"
