@@ -2,18 +2,37 @@
 
 """The attribute filter decorator."""
 
+import re
+try:
+    basestring
+except:
+    basestring = str
+
 class PermissibleAttr(object):
     def __init__(self, permissible_attrs=None):
-        """
-        A class whose objects are callable and play the role of an attribute filter.
-        The use of this class is to construct a function that will allow or disallow specific attributes to be
-        accessed by an ObjWrap.
-        :param permissible_attrs: The specification that determines what attributes are allowed to be accessed.
-            Note that specifications must be
-            complete (i.e. describing the whole attribute path, not just a subset. For example, if you want
-            to have access to this.given.thing you, specifying r"this\.given" won't be enough.
-            If you're specifying with a regular expression for example, need to specify
-            "this\.given.thing" or "this\.given\..*" (the latter giving access to all children of this.given.).
+        """A class whose objects are callable and play the role of an
+        attribute filter.
+
+        The use of this class is to construct a function that will
+        allow or disallow specific attributes to be accessed by
+        an ObjWrap.
+
+        :param permissible_attrs: The specification that determines
+                                  what attributes are allowed to be
+                                  accessed.
+
+                                  Note that specifications must be
+                                  complete (i.e. describing the whole
+                                  attribute path, not just a subset.
+                                  For example, if you want to have
+                                  access to this.given.thing you,
+                                  specifying r"this\.given" won't be
+                                  enough. If you're specifying with
+                                  a regular expression for example,
+                                  need to specify r"this\.given.thing"
+                                  or r"this\.given\..*" (the latter
+                                  giving access to all children of
+                                  this.given.).
             Allowed formats:
                 a list of patterns to include (most common)
                 a re.compiled pattern
@@ -45,22 +64,30 @@ class MatchAttr(object):
     __slots__ = ["_at"]
 
     def __new__(cls, attr, *args, **kwargs):
-        """If this is already a MatchAttr, return it. Otherwise, create one."""
+        """If this is already a MatchAttr, return it. Otherwise, create one.
 
-        if isinstance(attr, MatchAttr):
+        - If attr is an instance of cls, return it.
+        - If attr is a string, create a new instance of cls and
+          return it.
+        - If attr is an instance of a different MatchAttr, use its
+          regular expression to find or create a new cls."""
+
+        if isinstance(attr, cls):
             return attr
 
         if isinstance(attr, basestring):
             r = re.compile(attr)
-        elif isinstance(r, cls._re_type_):
+        elif isinstance(attr, cls._re_type_):
             r = attr
+        elif hasattr(attr, "_at"):
+            r = attr._at
         else:
             raise TypeError("%s called with invalid attr: %s" % (cls, attr))
 
         k = (attr, r)
 
         if k not in cls._matches_:
-            cls._matches_[k] = object.__new__(cls, r, *args, **kwargs)
+            cls._matches_[k] = object.__new__(cls)
 
         return cls._matches_[k]
 
@@ -68,20 +95,30 @@ class MatchAttr(object):
         if hasattr(self, "_at"):
             return
 
-        self._at = re.compile(attr)
+        if isinstance(attr, basestring):
+            self._at = re.compile(attr)
+        else:
+            self._at = attr
 
     def __eq__(self, attr):
-        return self._at == attr._at
+        if isinstance(attr, MatchAttr):
+            return self._at == attr._at
+        else:
+            return self._at == attr
 
     def __call__(self, attr):
-        return self._at.match(attr)
+        if self._at.match(attr):
+            return True
+        else:
+            return False
+
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
     """
     Construct a compiled regular expression from a permissions dict containing a list of what to include and exclude.
     Will be used in ObjWrapper if permissible_attr_pattern is a dict.
     Note that the function enforces certain patterns (like inclusions ending with $ unless they end with *, etc.
-    What is not checked for is that the "." was meant, or if it was "\." that was meant.
+    What is not checked for is that the "." was meant, or if it was r"\." that was meant.
     This shouldn't be a problem in most cases, and hey! It's to the user to know regular expressions!
     :param attr_permissions: A dict of the format {'include': INCLUSION_LIST, 'exclude': EXCLUSION_LIST}.
         Both 'include' and 'exclude' are optional, and their lists can be empty.

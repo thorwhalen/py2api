@@ -9,7 +9,8 @@ minimum-necessary code, crucial, for instance, for micro-services.
 """
 
 from py2api.errors import MissingAttribute, ForbiddenAttribute
-from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively, enhanced_docstr
+# from py2api.permissible import PermissibleAttr
+from py2api.util import default_to_jdict, get_attr_recursively, enhanced_docstr
 from py2api.constants import _OUTPUT_TRANS, _HELP
 
 try:
