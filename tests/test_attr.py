@@ -7,14 +7,25 @@ import re
 from py2api.permissible import MatchAttr
 
 from hypothesis import given, assume
-from hypothesis.strategies import text, characters
+from hypothesis.strategies import text, characters, composite
 
-identifier = text(
-    alphabet=characters(whitelist_categories="LN",
-                        min_codepoint=0x20,
-                        max_codepoint=0x7f))
+@composite
+def identifier(draw):
+    c = draw(text(alphabet=characters(whitelist_categories="L",
+                                      min_codepoint=0x20,
+                                      max_codepoint=0x7f),
+                  min_size=1))
+    cs = draw(text(alphabet=characters(whitelist_categories="LN",
+                                       min_codepoint=0x20,
+                                       max_codepoint=0x7f)))
+    return c + cs
 
-@given(a1=identifier, a2=identifier)
+#identifier = text(
+#    alphabet=characters(whitelist_categories="LN",
+#                        min_codepoint=0x20,
+#                        max_codepoint=0x7f))
+
+@given(a1=identifier(), a2=identifier())
 def test_match_attr_string(a1, a2):
     """Check creating MatchAttr from strings."""
 
@@ -31,7 +42,7 @@ def test_match_attr_string(a1, a2):
 
     assert m != o, "MatchAttrs with different matches are not equal"
 
-@given(a1=identifier, a2=identifier)
+@given(a1=identifier(), a2=identifier())
 def test_match_attr_re(a1, a2):
 
     assume(a1 != a2)
