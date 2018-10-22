@@ -103,6 +103,8 @@ class MatchAttr(object):
     def __eq__(self, attr):
         if isinstance(attr, MatchAttr):
             return self._at == attr._at
+        elif isinstance(attr, basestring):
+            return self._at == re.compile(attr)
         else:
             return self._at == attr
 

@@ -20,11 +20,6 @@ def identifier(draw):
                                        max_codepoint=0x7f)))
     return c + cs
 
-#identifier = text(
-#    alphabet=characters(whitelist_categories="LN",
-#                        min_codepoint=0x20,
-#                        max_codepoint=0x7f))
-
 @given(a1=identifier(), a2=identifier())
 def test_match_attr_string(a1, a2):
     """Check creating MatchAttr from strings."""
@@ -37,6 +32,7 @@ def test_match_attr_string(a1, a2):
     o = MatchAttr(a2)
 
     assert m(a1) == True, "Calling MatchAttr on the original attr matches"
+    assert m == a1, "MatchAttr == its string "
     assert m == n, "MatchAttrs with same match are equal"
     assert m is n, "MatchAttrs with same match are same"
 
@@ -51,6 +47,5 @@ def test_match_attr_re(a1, a2):
 
     m_a = MatchAttr(m)
 
-    assert m_a._at == m
-
-    assert MatchAttr(m) == m
+    assert m_a._at == m, "MatchAttr._at == its re"
+    assert MatchAttr(m) == m, "MatchAttr == its re"
