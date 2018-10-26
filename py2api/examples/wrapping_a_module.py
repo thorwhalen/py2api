@@ -4,7 +4,7 @@ This shows you how you can do this in a few lines.
 
 WARNING: DO THIS AT HOME (but never on an actual prod server).
 --> Reason is, since you're giving access to EVERYTHING, there's ways to use the power of python to backtrack into
-the actual system and make damange.
+the actual system and make damage.
 
 The usual way to wrap a module, function, or object and expose to a webservice is to define an explicit list of
 attributes that can be access, which ensures that nothing else can. It's possible to use regular expressions to get more
