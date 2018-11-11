@@ -2,27 +2,27 @@
 Run this file and try it out with curl or in a browser.
 
 Examples
-    http://0.0.0.0:5003/my_ws?attr=greet
-    http://0.0.0.0:5003/my_ws?attr=greet&user=me
-    http://0.0.0.0:5003/my_ws?attr=greet&dflt_greeting=Goodnight
-    http://0.0.0.0:5003/my_ws?attr=greet&dflt_greeting=Goodnight&user=day
-    http://0.0.0.0:5003/my_ws?attr=fcalc.whoami
-    http://0.0.0.0:5003/my_ws?attr=icalc.compute&_help=1
-    http://0.0.0.0:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=/
-    http://0.0.0.0:5003/my_ws?attr=icalc.compute&x=5&y=3&op=/
-    http://0.0.0.0:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=-
+    http://127.0.0.1:5003/my_ws?attr=greet
+    http://127.0.0.1:5003/my_ws?attr=greet&user=me
+    http://127.0.0.1:5003/my_ws?attr=greet&dflt_greeting=Goodnight
+    http://127.0.0.1:5003/my_ws?attr=greet&dflt_greeting=Goodnight&user=day
+    http://127.0.0.1:5003/my_ws?attr=fcalc.whoami
+    http://127.0.0.1:5003/my_ws?attr=icalc.compute&_help=1
+    http://127.0.0.1:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=/
+    http://127.0.0.1:5003/my_ws?attr=icalc.compute&x=5&y=3&op=/
+    http://127.0.0.1:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=-
 
 See that for the "+" operation, you need to urlencode (as %2B):
-    http://0.0.0.0:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=%2B
+    http://127.0.0.1:5003/my_ws?attr=fcalc.compute&x=5&y=3&op=%2B
 
 See that
-    http://0.0.0.0:5003/my_ws?attr=fcalc.whoami
+    http://127.0.0.1:5003/my_ws?attr=fcalc.whoami
 will raise a ForbiddenAttribute error, since it wasn't "registered" as a permissible_attr.
 
 """
 import os
 from flask import jsonify
-from oto.misc.single_wf_snip_analysis import TaggedWaveformAnalysisForWS
+# from oto.misc.single_wf_snip_analysis import TaggedWaveformAnalysisForWS
 
 from py2api.constants import _ARGNAME, _ELSE, _ATTR
 from py2api.py2rest.obj_wrap import WebObjWrapper
@@ -147,13 +147,10 @@ obj_wrapper = WebObjWrapper(obj_constructor=Controller,
 
 route_func_list = [obj_wrapper]
 
-module_name, _ = os.path.splitext(os.path.basename(__file__))
-
-app = mk_app(app_name=module_name, routes=route_func_list)
+app = mk_app(app_name=__name__, routes=route_func_list)
 
 if __name__ == "__main__":
     app_run_kwargs = dflt_run_app_kwargs()
     app_run_kwargs['port'] = 5003
     # print("Starting the app with kwargs: {}".format(app_run_kwargs))
     app.run(**app_run_kwargs)
-

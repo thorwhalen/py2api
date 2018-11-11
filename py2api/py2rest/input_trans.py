@@ -11,31 +11,29 @@ DFLT_TRANS = {
 }
 
 
-def _preprocess_trans_dict(trans_dict):
-    if trans_dict is None:
-        trans_dict = dict()
-    assert isinstance(trans_dict, dict), "trans_dict must be a dict"
-    if _ARGS not in trans_dict:
-        trans_dict['_arg'] = dict()
-    if _JSON not in trans_dict:
-        trans_dict['_json'] = dict()
+def _preprocess_trans_dict(trans_dict={}):
+    trans_dict = dict(trans_dict)
+
+    trans_dict.setdefault(_ARGS, dict())
+    trans_dict.setdefault(_JSON, dict())
+
     return trans_dict
 
+def get_empty_none(o, a, d=None):
+    v = getattr(o, a, d)
+
+    if v is None:
+        v = d
+
+    return v
 
 def get_request_data_from_source(request, source):
     if source == _JSON:
-        if hasattr(request, 'json') and request.json:
-            return request.json.items()
-        else:
-            return {}
+        return get_empty_none(request, "json", {}).items()
     elif source == _ARGS:
-        if hasattr(request, 'args') and request.args:
-            return request.args.items()
-        else:
-            return {}
+        return get_empty_none(request, "args", {}).items()
     else:
         raise ValueError("This source isn't recognized: {}".format(source))
-
 
 class InputTrans(object):
     """
@@ -312,9 +310,10 @@ class InputTrans(object):
             return TRANS_NOT_FOUND
 
     def _get_attr_from_request(self, request, **route_args):
-        attr = route_args.get(ATTR)
-        if not attr:
-            attr = request.args.get(ATTR)
+        if ATTR in route_args:
+            return route_args[ATTR]
+
+        return request.args[ATTR]
 
     def __call__(self, request, **route_args):
         """
@@ -324,6 +323,7 @@ class InputTrans(object):
         :return: input_dict, where input_dict is an {arg: val, ...} dict
         """
         # get the attr from the request
+
         attr = self._get_attr_from_request(request)
 
         # start with specific defaults for that attr, if it exist, or an empty dict if not
@@ -346,7 +346,7 @@ class InputTrans(object):
 
         input_dict.pop(ATTR, None)  # in case ATTR was in input_dict, remove it.
 
-        return input_dict
+        return attr, input_dict
 
 
 re_type = type(re.compile('.'))
