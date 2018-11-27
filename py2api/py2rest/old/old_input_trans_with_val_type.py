@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
@@ -23,12 +23,12 @@ def _preprocess_trans_dict(trans_dict):
 def get_request_data_from_source(request, source):
     if source == _JSON:
         if hasattr(request, 'json'):
-            return request.json.items()
+            return list(request.json.items())
         else:
             return {}
     elif source == _ARGS:
         if hasattr(request, 'args'):
-            return request.args.items()
+            return list(request.args.items())
         else:
             return {}
     else:
@@ -307,7 +307,7 @@ class InputTrans(object):
 
                 ############### search _VALTYPE ###############
                 if _VALTYPE in trans_spec:
-                    for _type, _type_trans_spec in trans_spec[_VALTYPE].items():
+                    for _type, _type_trans_spec in list(trans_spec[_VALTYPE].items()):
                         if isinstance(val, _type):
                             return _type_trans_spec
 

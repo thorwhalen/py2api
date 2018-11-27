@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 import re
 
@@ -25,12 +25,12 @@ def _preprocess_trans_dict(trans_dict):
 def get_request_data_from_source(request, source):
     if source == _JSON:
         if hasattr(request, 'json') and request.json:
-            return request.json.items()
+            return list(request.json.items())
         else:
             return {}
     elif source == _ARGS:
         if hasattr(request, 'args') and request.args:
-            return request.args.items()
+            return list(request.args.items())
         else:
             return {}
     else:
@@ -359,7 +359,7 @@ class InputTransWithAttrInURL(InputTrans):
     def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE), attr_from_url='(\w+)$'):
         super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
-            if isinstance(attr_from_url, basestring):
+            if isinstance(attr_from_url, str):
                 _attr_from_url = re.compile(attr_from_url)
             elif isinstance(attr_from_url, re_type):
                 _attr_from_url = attr_from_url

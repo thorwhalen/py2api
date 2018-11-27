@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from functools import lru_cache
 from py2api.defaults import DFLT_LRU_CACHE_SIZE

@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from .constants import TRANS_NOT_FOUND, _OUTPUT_TRANS, _ATTR, _VALTYPE, _ELSE
 
@@ -97,7 +97,7 @@ class OutputTrans(object):
 
                 ############### search _VALTYPE #############
                 if _VALTYPE in trans_spec:
-                    for _type, _type_trans_spec in trans_spec[_VALTYPE].items():
+                    for _type, _type_trans_spec in list(trans_spec[_VALTYPE].items()):
                         if isinstance(val, _type):
                             return _type_trans_spec
 

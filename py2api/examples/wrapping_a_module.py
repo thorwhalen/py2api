@@ -17,7 +17,7 @@ Run the web service and try things like:
 etc.
 
 """
-from __future__ import division
+
 
 import os
 
