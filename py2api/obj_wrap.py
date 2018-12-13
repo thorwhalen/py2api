@@ -16,7 +16,7 @@ from py2api.constants import _OUTPUT_TRANS, _HELP
 # Dev Notes
 """
 (1) Might want to change all "reserved" strings (such as attr (see ATTR), result (see DFLT_RESULT_FIELD),
-and file (see py2web constant FILE_FIELD) to be prefixed by an underscore,
+and file (see py2rest constant FILE_FIELD) to be prefixed by an underscore,
 so as to have extra protection against collision.
 """
 
