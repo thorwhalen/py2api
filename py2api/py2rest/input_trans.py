@@ -315,6 +315,7 @@ class InputTrans(object):
         attr = route_args.get(ATTR)
         if not attr:
             attr = request.args.get(ATTR)
+        return attr
 
     def __call__(self, request, **route_args):
         """
@@ -346,7 +347,7 @@ class InputTrans(object):
 
         input_dict.pop(ATTR, None)  # in case ATTR was in input_dict, remove it.
 
-        return input_dict
+        return attr, input_dict
 
 
 re_type = type(re.compile('.'))
