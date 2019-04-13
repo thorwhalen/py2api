@@ -72,7 +72,7 @@ class ObjWrap(object):
 
         if obj_constructor_arg_names is None:  # no constructor arguments
             obj_constructor_arg_names = []
-        elif isinstance(obj_constructor_arg_names, basestring):  # a single constructor argument
+        elif isinstance(obj_constructor_arg_names, str):  # a single constructor argument
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
@@ -145,7 +145,7 @@ class ObjWrap(object):
         attr, input_data = self.input_trans(request, **route_args)
 
         if self.debug:
-            print("attr={}, input_data = {}".format(attr, input_data))
+            print(("attr={}, input_data = {}".format(attr, input_data)))
 
         # make sure attr is there, and is permissible
         if attr is None:
@@ -158,7 +158,7 @@ class ObjWrap(object):
         obj_kwargs = {k: input_data.pop(k) for k in self.obj_constructor_arg_names if k in input_data}
 
         if self.debug:
-            print("attr={}, obj_kwargs = {}, input_data = {}".format(attr, obj_kwargs, input_data))
+            print(("attr={}, obj_kwargs = {}, input_data = {}".format(attr, obj_kwargs, input_data)))
 
         # make the attribute object
         obj_attr = self.obj_attr(obj_spec=obj_kwargs, attr=attr)

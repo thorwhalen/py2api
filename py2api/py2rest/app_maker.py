@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -39,7 +39,7 @@ def mk_app(app_name, routes=None, app_config=None, cors=True):
     app = Flask(app_name)
     if app_config is None:
         app_config = {'JSON_AS_ASCII': False}
-    for k, v in app_config.items():
+    for k, v in list(app_config.items()):
         app.config[k] = v
     if cors:
         if cors is True:
@@ -50,7 +50,7 @@ def mk_app(app_name, routes=None, app_config=None, cors=True):
 
     @app.errorhandler(InternalServerError)
     def handle_internal_server_error(e):
-        print("General error: {}".format(e))
+        print(("General error: {}".format(e)))
         response = jsonify(success=False, error="InternalServerError",
                            message="Failed to perform action: {}".format(str(e)))
         response.status_code = 500
@@ -73,7 +73,7 @@ def mk_app(app_name, routes=None, app_config=None, cors=True):
 def add_routes_to_app(app, routes):
     _routes = list()
     if isinstance(routes, dict):
-        for route_name, route_ow in routes.items():
+        for route_name, route_ow in list(routes.items()):
             _routes.append(route_wrapper(route_ow, route_name=route_name))
         routes = _routes
     else:

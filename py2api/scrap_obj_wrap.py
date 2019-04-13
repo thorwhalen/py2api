@@ -89,7 +89,7 @@ class ObjWrap(object):
 
         if obj_constructor_arg_names is None:
             obj_constructor_arg_names = []
-        elif isinstance(obj_constructor_arg_names, basestring):
+        elif isinstance(obj_constructor_arg_names, str):
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
@@ -178,13 +178,13 @@ class ObjWrap(object):
         input_dict = self.input_trans(attr, request)
 
         if self.debug:
-            print("robj: kwargs = {}".format(input_dict))
+            print(("robj: kwargs = {}".format(input_dict)))
 
         # pop off any arguments that are meant to be for the base obj (module, function, class instance) constructor
         obj_kwargs = {k: input_dict.pop(k) for k in self.obj_constructor_arg_names if k in input_dict}
 
         if self.debug:
-            print("robj: attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict))
+            print(("robj: attr={}, obj_kwargs = {}, kwargs = {}".format(attr, obj_kwargs, input_dict)))
 
         # make the base object
         obj_attr = self.obj_attr(obj_spec=obj_kwargs, attr=attr)

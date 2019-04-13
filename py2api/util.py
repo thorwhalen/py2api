@@ -1,10 +1,10 @@
-from __future__ import division
+
 
 import json
 import re
 from inspect import getargspec
 
-from defaults import DFLT_RESULT_FIELD
+from .defaults import DFLT_RESULT_FIELD
 
 
 def _strigify_val(val):
@@ -17,7 +17,7 @@ def _strigify_val(val):
     :param val: value to be stringified
     :return:
     """
-    if isinstance(val, basestring):
+    if isinstance(val, str):
         return '"' + val + '"'
     elif callable(val) or isinstance(val, type):
         return val.__name__
@@ -48,12 +48,11 @@ def enhanced_docstr(func):
     argspec = getargspec(func)
 
     dflts = argspec.defaults or list()
-    dflts = map(_strigify_val, dflts)
+    dflts = list(map(_strigify_val, dflts))
 
     args_strings = list()
     args_strings += argspec.args[:-len(dflts)]
-    args_strings += map(lambda x: "{}={}".format(*x),
-                        zip(argspec.args[-len(dflts):], dflts))
+    args_strings += ["{}={}".format(*x) for x in zip(argspec.args[-len(dflts):], dflts)]
     if argspec.varargs is not None:
         args_strings += ["*{}".format(argspec.varargs)]
     if argspec.keywords is not None:
@@ -186,15 +185,15 @@ def default_to_jdict(result, result_field=DFLT_RESULT_FIELD):
     if isinstance(result, list):
         return {result_field: result}
     elif isinstance(result, dict) and len(result) > 0:
-        first_key, first_val = result.iteritems().next()  # look at the first key to determine what to do with the dict
+        first_key, first_val = next(iter(result.items()))  # look at the first key to determine what to do with the dict
         if isinstance(first_key, int):
-            key_trans = unichr
+            key_trans = chr
         else:
             key_trans = lambda x: x
         if isinstance(first_val, dict):
-            return {result_field: {key_trans(k): default_to_jdict(v) for k, v in result.iteritems()}}
+            return {result_field: {key_trans(k): default_to_jdict(v) for k, v in iter(result.items())}}
         else:
-            return {key_trans(k): v for k, v in result.iteritems()}
+            return {key_trans(k): v for k, v in iter(result.items())}
     elif hasattr(result, 'to_json'):
         return json.loads(result.to_json())
     else:

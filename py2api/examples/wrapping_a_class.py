@@ -1,7 +1,7 @@
 """
 Run this file and try it out with curl or in a browser.
 
-Examples
+Examples:
     http://0.0.0.0:5003/my_ws?attr=greet
     http://0.0.0.0:5003/my_ws?attr=greet&user=me
     http://0.0.0.0:5003/my_ws?attr=greet&dflt_greeting=Goodnight
@@ -19,6 +19,7 @@ See that
     http://0.0.0.0:5003/my_ws?attr=fcalc.whoami
 will raise a ForbiddenAttribute error, since it wasn't "registered" as a permissible_attr.
 
+Note that you can also check out tests/wrapping_a_class.py to see what is expected.
 """
 import os
 from flask import jsonify
@@ -57,7 +58,7 @@ class IntCalculator(object):
 
     def compute(self, x, op, y):
         """
-        An int "x op y" operation (that is, division will be as expected).
+        An int "x op y" operation (that is, division will be euclidean).
         :param x: a number
         :param op: the operation
         :param y: another number
@@ -136,12 +137,12 @@ output_trans = OutputTrans(lambda x: jsonify({'_result': x}))
 
 # wrapper ##############################################################################################################
 obj_wrapper = WebObjWrapper(obj_constructor=Controller,
-                           obj_constructor_arg_names=['user', 'dflt_greeting'],
-                           permissible_attr=['greet', 'fcalc.compute', 'fcalc.whoami', 'icalc.compute'],
-                           input_trans=input_trans,
-                           output_trans=output_trans,
-                           name='/my_ws',
-                           debug=1)
+                            obj_constructor_arg_names=['user', 'dflt_greeting'],
+                            permissible_attr=['greet', 'fcalc.compute', 'fcalc.whoami', 'icalc.compute'],
+                            input_trans=input_trans,
+                            output_trans=output_trans,
+                            name='/my_ws',
+                            debug=1)
 
 # Adding routes to app #################################################################################################
 
@@ -156,4 +157,3 @@ if __name__ == "__main__":
     app_run_kwargs['port'] = 5003
     # print("Starting the app with kwargs: {}".format(app_run_kwargs))
     app.run(**app_run_kwargs)
-
