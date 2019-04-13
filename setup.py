@@ -6,4 +6,6 @@ setup(name='py2api',
       url='http://https://github.com/thorwhalen/py2api.git',
       author='OtoSense',
       license='Apache',
-      packages=find_packages())
+      packages=find_packages(),
+      install_requires=[]
+      )

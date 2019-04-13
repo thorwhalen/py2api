@@ -94,7 +94,7 @@ class InputTrans(object):
              default, this means that if an argument is mentioned both in request.json and request.args, it is the
              one in request.args that will be taken.
 
-    >>> from urlparse import parse_qsl, urlsplit
+    >>> from urllib.parse import parse_qsl, urlsplit
     >>> class MockRequest(object):  # a class to mockup a web service request
     ...     def __init__(self, url=None, json=None):
     ...         self.url = None
@@ -128,12 +128,14 @@ class InputTrans(object):
     >>> input_trans = InputTrans(trans_spec)
     >>> url = '?attr=any_attr&g=1.61&e=2.17&pi=3.14&x=something_else'
     >>>
-    >>> print(input_trans(request=MockRequest(url)))
-    ('any_attr', {'x': 'something_else', 'pi': 3, 'e': '2.17', 'g': 1.61})
+    >>> expected = ('any_attr', {'g': 1.61, 'e': '2.17', 'pi': 3, 'x': 'something_else'})
+    >>> assert input_trans(request=MockRequest(url)) == expected
+    >>> # ('any_attr', {'g': 1.61, 'e': '2.17', 'pi': 3, 'x': 'something_else'})
     >>>
     >>> request = MockRequest(url='?attr=special_attr&g=1.61&e=2.17&pi=3.14')
-    >>> print(input_trans(request))
-    ('special_attr', {'pi': 3, 'e': set(['1', '2', '7', '.']), 'g': ['1', '.', '6', '1']})
+    >>> expected = ('special_attr', {'g': ['1', '.', '6', '1'], 'e': {'1', '7', '.', '2'}, 'pi': 3})
+    >>> assert input_trans(request) == expected
+    >>> #('special_attr', {'g': ['1', '.', '6', '1'], 'e': {'7', '2', '1', '.'}, 'pi': 3})
     >>>
     >>> ####### And now, a more complicated example #############
     >>> # The following more complicated example demonstrates how one can
@@ -144,7 +146,7 @@ class InputTrans(object):
     >>> def test_item(input_trans, request):
     ...     attr, kwargs = input_trans(request)
     ...     print("Testing with {}".format(attr))
-    ...     pprint(kwargs)
+    ...     return kwargs
     ...
     >>> trans_spec = {
     ...     _ATTR: {
@@ -176,19 +178,21 @@ class InputTrans(object):
     ...     }
     ... )
     >>> request.set_url('?attr=special_attr&int_1=34&float_1=3.14159')
-    >>> test_item(input_trans, request=request)
+    >>> got = test_item(input_trans, request=request)
     Testing with special_attr
-    {'float_1': 3,
-     'int_1': 34,
-     'list_1': "['should', 'become', 'set']",
-     'list_2': 'should|become|tuple'}
+    >>> expected = {'list_1': "['should', 'become', 'set']",
+    ...     'list_2': 'should|become|tuple',
+    ...     'int_1': 34, 'float_1': 3}
+    >>> assert got == expected
+    >>>
     >>> request.set_url('?attr=any_attr&int_1=34&float_1=3.14159')
-    >>> test_item(input_trans, request=request)
+    >>> got = test_item(input_trans, request=request)
     Testing with any_attr
-    {'float_1': 3.14159,
-     'int_1': 34,
-     'list_1': set(['become', 'set', 'should']),
-     'list_2': ('should', 'become', 'tuple')}
+    >>> expected = {'list_1': {'should', 'become', 'set'},
+    ...     'list_2': ('should', 'become', 'tuple'),
+    ...     'int_1': 34, 'float_1': 3.14159}
+    >>> assert got == expected
+    >>>
     >>> request = MockRequest(
     ...     url='?attr=any_attr&float_1=3.14159&list_2=should|become|tuple',
     ...     json={
@@ -197,12 +201,13 @@ class InputTrans(object):
     ...     }
     ... )
     >>>
-    >>> test_item(input_trans, request=request)
+    >>> got = test_item(input_trans, request=request)
     Testing with any_attr
-    {'float_1': 3.14159,
-     'list_1': set(['become', 'set', 'should']),
-     'list_2': ('should', 'become', 'tuple'),
-     'other_arg': 'another arg'}
+    >>> expected = {'list_1': {'set', 'should', 'become'},
+    ...         'other_arg': 'another arg',
+    ...         'float_1': 3.14159,
+    ...         'list_2': ('should', 'become', 'tuple')}
+    >>> assert got == expected
     >>>
     >>> request = MockRequest(
     ...     url='?attr=any_attr&int_1=34&float_1=2.71',
@@ -213,13 +218,13 @@ class InputTrans(object):
     ...         'float_1': 3.14159
     ...     }
     ... )
-    >>> test_item(input_trans, request=request)
+    >>> got = test_item(input_trans, request=request)
     Testing with any_attr
-    {'float_1': 2.71,
-     'int_1': 34,
-     'list_1': set(['become', 'set', 'should']),
-     'list_2': ('should', 'become', 'tuple'),
-     'other_arg': 'another arg'}
+    >>> expected = {'list_1': {'should', 'set', 'become'},
+    ...         'list_2': ('should', 'become', 'tuple'),
+    ...         'other_arg': 'another arg',
+    ...         'float_1': 2.71, 'int_1': 34}
+    >>> assert got == expected
     """
 
     def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE)):
