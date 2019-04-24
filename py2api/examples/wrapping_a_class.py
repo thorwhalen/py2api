@@ -23,9 +23,8 @@ Note that you can also check out tests/wrapping_a_class.py to see what is expect
 """
 import os
 from flask import jsonify
-from oto.misc.single_wf_snip_analysis import TaggedWaveformAnalysisForWS
 
-from py2api.constants import _ARGNAME, _ELSE, _ATTR
+from py2api.constants import _ARGNAME, _ATTR
 from py2api.py2rest.obj_wrap import WebObjWrapper
 from py2api.py2rest.input_trans import InputTrans
 from py2api.output_trans import OutputTrans
