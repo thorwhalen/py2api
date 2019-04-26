@@ -66,6 +66,7 @@ class ObjWrap(object):
             be LRU-cached.
         """
         if not callable(obj_constructor):
+            # not isinstance(obj_constructor, type): (but that doesn't work because type is wrapped in lru sometimes
             self.obj_constructor = lambda: obj_constructor  # it's the object itself
         else:
             self.obj_constructor = obj_constructor
@@ -112,6 +113,7 @@ class ObjWrap(object):
         # get or make the base object
         if isinstance(obj_spec, dict):
             obj_spec = self.obj_constructor(**obj_spec)
+            print(obj_spec, attr)
         elif isinstance(obj_spec, (tuple, list)):
             obj_spec = self.obj_constructor(*obj_spec)
         elif obj_spec is not None:
