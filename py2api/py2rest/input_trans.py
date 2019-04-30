@@ -255,7 +255,7 @@ class InputTrans(object):
 
                     return trans_func
 
-                ############### search _SOURCE ###############
+                ############### search _SOURCE, _ATTR, and _ARGNAME ###############
                 # TODO: Would like to include as search_in_field(trans_spec, _SOURCE, source) in the or below.
                 if source is not None:  # only do this if there's an actual source specified
                     _trans_spec = trans_spec.get(_SOURCE, {}).get(source, {})
