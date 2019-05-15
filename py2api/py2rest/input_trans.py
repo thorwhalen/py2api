@@ -95,18 +95,14 @@ class InputTrans(object):
     >>> from urllib.parse import parse_qsl, urlsplit
     >>> class MockRequest(object):  # a class to mockup a web service request
     ...     def __init__(self, url=None, json=None):
-    ...         self.url = None
-    ...         self.set_url(url)
-    ...         if json is None:
-    ...             json = {}
-    ...         self.json = json
-    ...     def set_url(self, url):
     ...         self.url = url
+    ...         self.json = json or {}
+    ...     @property
+    ...     def args(self):
     ...         if self.url is not None:
-    ...             self.args = dict(parse_qsl(urlsplit(url).query))
+    ...             return dict(parse_qsl(urlsplit(self.url).query))
     ...         else:
-    ...             self.args = dict()
-    ...
+    ...             return dict()
     >>> # Most of the time, all you'll need is to specify the argnames that need to be converted, plus what ever
     >>> # exceptions to this you might have (usually, if the conversion depends on the attribute name).
     >>> trans_spec = {
@@ -175,7 +171,7 @@ class InputTrans(object):
     ...         'list_2': ['should', 'become', 'tuple']
     ...     }
     ... )
-    >>> request.set_url('?attr=special_attr&int_1=34&float_1=3.14159')
+    >>> request.url = '?attr=special_attr&int_1=34&float_1=3.14159'
     >>> got = test_item(input_trans, request=request)
     Testing with special_attr
     >>> expected = {'list_1': "['should', 'become', 'set']",
@@ -183,7 +179,7 @@ class InputTrans(object):
     ...     'int_1': 34, 'float_1': 3}
     >>> assert got == expected
     >>>
-    >>> request.set_url('?attr=any_attr&int_1=34&float_1=3.14159')
+    >>> request.url = '?attr=any_attr&int_1=34&float_1=3.14159'
     >>> got = test_item(input_trans, request=request)
     Testing with any_attr
     >>> expected = {'list_1': {'should', 'become', 'set'},
