@@ -13,7 +13,7 @@ especially the doctest, which should give you an idea of how to work it.
 
 A webservice module assembled with py2api looks something like this:
 
-```
+```python
     from mystuff import SystemService
     from py2api import OutputTrans
     from py2api.py2rest import InputTransWithAttrInURL
@@ -94,7 +94,7 @@ to deal with the nitty gritty details of receiving and sending web requests.
 Say, you chose flask. Good choice. Known to have minimal boiler plate.
 So now all you have to do make a module and do something like this...
 
-```
+```python
 from blah import a_func_you_want_to_expose
 @app.route("/a_func_you_want_to_expose/", methods=['GET'])
 def _a_func_you_want_to_expose():
