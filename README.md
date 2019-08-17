@@ -13,6 +13,7 @@ especially the doctest, which should give you an idea of how to work it.
 
 A webservice module assembled with py2api looks something like this:
 
+```
     from mystuff import SystemService
     from py2api import OutputTrans
     from py2api.py2rest import InputTransWithAttrInURL
@@ -34,6 +35,7 @@ A webservice module assembled with py2api looks something like this:
             process.__name__ + attr: process for attr in attr_list
         }
     )
+```
 
 Note the two trans_spec=None used when making the input_trans and output_trans arguments of 
 WebObjWrapper. There was no need to specify any special conversion there because the methods
@@ -49,32 +51,34 @@ by specifying contextual rules involving the object's names and types, etc. grou
 
 Such a (more concise) conversion specification looks like this:
 
-    from py2api.constants import _ATTR, _ARGNAME, _ELSE, _VALTYPE
+```python
+from py2api.constants import _ATTR, _ARGNAME, _ELSE, _VALTYPE
 
-    def ensure_array(x):
-        if not isinstance(x, ndarray):
-            return array(x)
-        return x
-        
-    trans_spec = {
-            _ATTR: {
-                'this_attr': list,
-                'other_attr': str,
-                'yet_another_attr': {
-                    _VALTYPE: {
-                        dict: lambda x: x
-                    },
-                    _ELSE: lambda x: {'result': x}
-                }
-            },
-            _ARGNAME: {
-                'sr': int,
-                'ratio': float,
-                'snips': list,
-                'wf': ensure_array
-            },
-        }
+def ensure_array(x):
+    if not isinstance(x, ndarray):
+        return array(x)
+    return x
+
+trans_spec = {
+        _ATTR: {
+            'this_attr': list,
+            'other_attr': str,
+            'yet_another_attr': {
+                _VALTYPE: {
+                    dict: lambda x: x
+                },
+                _ELSE: lambda x: {'result': x}
+            }
+        },
+        _ARGNAME: {
+            'sr': int,
+            'ratio': float,
+            'snips': list,
+            'wf': ensure_array
+        },
     }
+}
+```
 
 See that the conversion function could be a builtin function like list, str, float, or int,
 or could be a custom function, declared on the fly with a lambda, or refering to a function
@@ -90,23 +94,24 @@ to deal with the nitty gritty details of receiving and sending web requests.
 Say, you chose flask. Good choice. Known to have minimal boiler plate.
 So now all you have to do make a module and do something like this...
 
-    from blah import a_func_you_want_to_expose
-    @app.route("/a_func_you_want_to_expose/", methods=['GET'])
-    def _a_func_you_want_to_expose():
-        # A whole bunch of boiler plate to get your arguments out
-        # of the web request object, which could be in the url, the json, the data...
-        # oh, and then you have to convert these all to python objects, 
-        # because they're all simple types like strings, numbers and lists, 
-        # you'll probably want to do some validation, perhaps add a few 
-        # things that weren't really a concern of the original function, 
-        # like logging, caching, providing some documentation/help, 
-        # and then, oh, okay, you can call that function of yours now:
-        
-        results = a_func_you_want_to_expose(...the arguments...)
-        
-        # But wait, it's not finished! You'll need to convert these results 
-        # to something that a web request can handle. Say a string or a json...
-        
+```
+from blah import a_func_you_want_to_expose
+@app.route("/a_func_you_want_to_expose/", methods=['GET'])
+def _a_func_you_want_to_expose():
+    # A whole bunch of boiler plate to get your arguments out
+    # of the web request object, which could be in the url, the json, the data...
+    # oh, and then you have to convert these all to python objects, 
+    # because they're all simple types like strings, numbers and lists, 
+    # you'll probably want to do some validation, perhaps add a few 
+    # things that weren't really a concern of the original function, 
+    # like logging, caching, providing some documentation/help, 
+    # and then, oh, okay, you can call that function of yours now:
+
+    results = a_func_you_want_to_expose(...the arguments...)
+
+    # But wait, it's not finished! You'll need to convert these results 
+    # to something that a web request can handle. Say a string or a json...
+```
         
 That's all. Enjoyed it?
 
