@@ -14,27 +14,27 @@ especially the doctest, which should give you an idea of how to work it.
 A webservice module assembled with py2api looks something like this:
 
 ```python
-    from mystuff import SystemService
-    from py2api import OutputTrans
-    from py2api.py2rest import InputTransWithAttrInURL
-    
-    attr_list = ['ping', 'status', 'stop', 'start', 'restart']
-    
-    name = '/api/process/'
-    process = WebObjWrapper(
-        obj_constructor=SystemService,
-        obj_constructor_arg_names=['name'],
-        permissible_attr=attr_list,
-        input_trans=InputTransWithAttrInURL(trans_spec=None, attr_from_url=name + "(\w+)"),
-        output_trans=OutputTrans(trans_spec=None),
-        name=name,
-        debug=0
-    )
-    
-    app = add_routes_to_app(app, routes={
-            process.__name__ + attr: process for attr in attr_list
-        }
-    )
+from mystuff import SystemService
+from py2api import OutputTrans
+from py2api.py2rest import InputTransWithAttrInURL
+
+attr_list = ['ping', 'status', 'stop', 'start', 'restart']
+
+name = '/api/process/'
+process = WebObjWrapper(
+    obj_constructor=SystemService,
+    obj_constructor_arg_names=['name'],
+    permissible_attr=attr_list,
+    input_trans=InputTransWithAttrInURL(trans_spec=None, attr_from_url=name + "(\w+)"),
+    output_trans=OutputTrans(trans_spec=None),
+    name=name,
+    debug=0
+)
+
+app = add_routes_to_app(app, routes={
+        process.__name__ + attr: process for attr in attr_list
+    }
+)
 ```
 
 Note the two trans_spec=None used when making the input_trans and output_trans arguments of 
