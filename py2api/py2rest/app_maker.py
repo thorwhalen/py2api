@@ -1,5 +1,3 @@
-
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError
@@ -99,3 +97,27 @@ def dflt_run_app_kwargs():
         dflt_kwargs['debug'] = 1
 
     return dflt_kwargs
+
+
+from py2api.py2rest.obj_wrap import WebObjWrapper
+
+
+class Struct:
+    def __init__(self, **attrs):
+        self.__dict__.update(attrs)
+
+
+def dispatch_funcs_to_web_app(funcs, input_trans=None, output_trans=None, name='py2api', debug=0):
+    if not isinstance(funcs, (list, tuple)) or callable(funcs):
+        funcs = [funcs]
+    s = Struct(**{func.__name__: func for func in funcs})
+
+    wrap = WebObjWrapper(obj_constructor=s,  # wrap this current module
+                         obj_constructor_arg_names=[],  # no construction, so no construction args
+                         permissible_attr=[func.__name__ for func in funcs],
+                         input_trans=input_trans,
+                         output_trans=output_trans,
+                         name='/',
+                         debug=debug)
+
+    return mk_app(app_name=name, routes=[wrap])
