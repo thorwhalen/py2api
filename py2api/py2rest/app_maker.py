@@ -100,6 +100,8 @@ def dflt_run_app_kwargs():
 
 
 from py2api.py2rest.obj_wrap import WebObjWrapper
+from py2api.output_trans import OutputTrans
+from py2api.py2rest.input_trans import InputTrans
 
 
 class Struct:
@@ -110,6 +112,13 @@ class Struct:
 def dispatch_funcs_to_web_app(funcs, input_trans=None, output_trans=None, name='py2api', debug=0):
     if not isinstance(funcs, (list, tuple)) or callable(funcs):
         funcs = [funcs]
+    if input_trans is None:
+        input_trans = InputTrans()
+    elif isinstance(input_trans, dict):
+        input_trans = InputTrans(input_trans)
+    if output_trans is None:
+        output_trans = OutputTrans(jsonify)
+
     s = Struct(**{func.__name__: func for func in funcs})
 
     wrap = WebObjWrapper(obj_constructor=s,  # wrap this current module
