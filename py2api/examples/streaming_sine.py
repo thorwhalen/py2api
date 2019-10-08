@@ -18,8 +18,8 @@ DFLT_PHASE = 0
 DFLT_SR = 1000
 
 
-def test_func(df: pd.DataFrame, x: int = 1):
-    return df.sum() * x  # does the stuff
+# def test_func(df: pd.DataFrame, x: int = 1):
+#     return df.sum() * x  # does the stuff
 
 
 def timed_sines(freq=DFLT_FREQ, amplitude=DFLT_AMPLITUDE, phase_in_radians=DFLT_PHASE):
@@ -67,13 +67,55 @@ def _plot_sine_samples(n=DFLT_N, sr=DFLT_SR, freq=DFLT_FREQ, amplitude=DFLT_AMPL
 
 
 if __name__ == "__main__":
-    from flask import jsonify
+    from flask import jsonify, send_file
     from py2api.py2rest.obj_wrap import WebObjWrapper
     from py2api.py2rest.input_trans import InputTrans, _ARGNAME, _ELSE
     from py2api.output_trans import OutputTrans, _ATTR
     from py2api.py2rest.app_maker import mk_app, dflt_run_app_kwargs
 
     import sys
+    from io import BytesIO
+    from functools import wraps
+    import soundfile as sf
+
+
+    def wfsr_to_wav_bytes(wf, sr):
+        with BytesIO() as fp:
+            sf.write(fp, wf, sr, format='wav')
+            fp.seek(0)
+            return fp.read()
+
+
+    def wrap_output(output_trans_func):
+        def output_trans_decorator(func):
+            @wraps(func)
+            def wrapped_func(*args, **kwargs):
+                return output_trans_func(func(*args, **kwargs))
+
+            return wrapped_func
+
+        return output_trans_decorator
+
+
+    def send_output_as_file(func):
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            output = func(args, **kwargs)
+            return send_file(
+                output,
+                attachment_filename='a404.wav',
+                mimetype='audio/wav'
+            )
+
+        return wrapped_func
+
+
+    def wf_from_timed_chunk(chunk):
+        return [x[1] for x in chunk]
+
+
+    get_data_chunk_bytes = wrap_output(wfsr_to_wav_bytes)(
+        wrap_output(wf_from_timed_chunk)(get_data_chunk))
 
     input_trans = InputTrans(
         trans_spec={
@@ -97,7 +139,7 @@ if __name__ == "__main__":
 
     wrap = WebObjWrapper(obj_constructor=sys.modules[__name__],  # wrap this current module
                          obj_constructor_arg_names=[],  # no construction, so no construction args
-                         permissible_attr=['timed_sines', 'get_data_chunk', 'test_func'],
+                         permissible_attr=['timed_sines', 'get_data_chunk', 'test_func', 'get_data_chunk_bytes'],
                          input_trans=input_trans,
                          output_trans=output_trans,
                          name='/',
