@@ -32,10 +32,10 @@ def get_request_data_from_source(request, source):
         else:
             return {}
     else:
-        raise ValueError("This source isn't recognized: {}".format(source))
+        raise ValueError(f"This source isn't recognized: {source}")
 
 
-class InputTrans(object):
+class InputTrans:
     """
     InputTrans allows to flexibly define a callable object to convert arguments into the types expected by the
     attribute that will be called.
@@ -357,8 +357,8 @@ class InputTransWithAttrInURL(InputTrans):
     Version of (py2rest) InputTrans that gets its attr from the url itself.
     """
 
-    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE), attr_from_url='(\w+)$'):
-        super(InputTransWithAttrInURL, self).__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
+    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE), attr_from_url=r'(\w+)$'):
+        super().__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, str):
                 _attr_from_url = re.compile(attr_from_url)
@@ -372,7 +372,7 @@ class InputTransWithAttrInURL(InputTrans):
                 if m:
                     return m.group(1)
                 else:
-                    raise ValueError("Couldn't parse out an attr from this url: {}".format(url))
+                    raise ValueError(f"Couldn't parse out an attr from this url: {url}")
 
             self.attr_from_url = __attr_from_url
         else:

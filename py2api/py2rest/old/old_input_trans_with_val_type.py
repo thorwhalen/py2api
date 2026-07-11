@@ -1,5 +1,3 @@
-
-
 from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _VALTYPE, _ELSE
 from py2api.py2rest.constants import _ARGS, _JSON, _SOURCE
@@ -32,10 +30,10 @@ def get_request_data_from_source(request, source):
         else:
             return {}
     else:
-        raise ValueError("This source isn't recognized: {}".format(source))
+        raise ValueError(f"This source isn't recognized: {source}")
 
 
-class InputTrans(object):
+class InputTrans:
     """
     InputTrans allows to flexibly define a callable object to convert arguments into the types expected by the
     attribute that will be called.

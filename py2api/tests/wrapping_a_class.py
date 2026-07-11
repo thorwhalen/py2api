@@ -3,7 +3,7 @@ from py2api.examples.wrapping_a_class import IntCalculator
 from py2api.util import enhanced_docstr
 
 port = 5003
-root = 'http://0.0.0.0:{port}/'.format(port=port)
+root = f'http://0.0.0.0:{port}/'
 fullurl = lambda relurl: root + relurl
 
 r = requests.get(fullurl('my_ws?attr=greet'))

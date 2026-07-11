@@ -48,9 +48,9 @@ def mk_app(app_name, routes=None, app_config=None, cors=True):
 
     @app.errorhandler(InternalServerError)
     def handle_internal_server_error(e):
-        print(("General error: {}".format(e)))
+        print(f"General error: {e}")
         response = jsonify(success=False, error="InternalServerError",
-                           message="Failed to perform action: {}".format(str(e)))
+                           message=f"Failed to perform action: {str(e)}")
         response.status_code = 500
         # this_logger.exception('{} InternalServerError default catch: Exception with stack trace!'.format(app_name))
         return response

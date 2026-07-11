@@ -28,7 +28,7 @@ so as to have extra protection against collision.
 ########################################################################################################################
 
 
-class ObjWrap(object):
+class ObjWrap:
     def __init__(
         self,
         obj_constructor,
@@ -215,7 +215,7 @@ class ObjWrap(object):
         input_dict = self.input_trans(attr, request)
 
         if self.debug:
-            print(('robj: kwargs = {}'.format(input_dict)))
+            print(f'robj: kwargs = {input_dict}')
 
         # pop off any arguments that are meant to be for the base obj (module, function, class instance) constructor
         obj_kwargs = {
@@ -226,11 +226,9 @@ class ObjWrap(object):
 
         if self.debug:
             print(
-                (
                     'robj: attr={}, obj_kwargs = {}, kwargs = {}'.format(
                         attr, obj_kwargs, input_dict
                     )
-                )
             )
 
         # make the base object

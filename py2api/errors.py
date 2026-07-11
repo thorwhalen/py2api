@@ -1,6 +1,3 @@
-
-
-
 class ClientError(Exception):
     status_code = 400
 
@@ -21,14 +18,14 @@ class BadRequest(ClientError):
     status_code = 400
 
     def __init__(self, message, payload=None):
-        super(BadRequest, self).__init__(message, self.status_code, payload)
+        super().__init__(message, self.status_code, payload)
 
 
 class Forbidden(ClientError):
     status_code = 403
 
     def __init__(self, message, payload=None):
-        super(Forbidden, self).__init__(message, self.status_code, payload)
+        super().__init__(message, self.status_code, payload)
 
 
 class ForbiddenAttribute(Forbidden):

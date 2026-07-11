@@ -1,7 +1,4 @@
-
-
-
-class TransNotFound(object):
+class TransNotFound:
     pass
 
 

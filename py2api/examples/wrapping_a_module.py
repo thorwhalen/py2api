@@ -30,7 +30,7 @@ from py2api.py2rest.app_maker import mk_app, dflt_run_app_kwargs
 
 os_path_wrap = WebObjWrapper(obj_constructor=os,  # if not a callable, the wrapper wraps always the same object
                              obj_constructor_arg_names=[],  # no construction, so no construction args
-                             permissible_attr='path\..*',  # allows all attributes below path.
+                             permissible_attr=r'path\..*',  # allows all attributes below path.
                              input_trans=InputTrans.from_argname_trans_dict({}),  # standard input_trans
                              output_trans=OutputTrans(trans_spec=lambda x: jsonify({'_result': x})),
                              name='/os',

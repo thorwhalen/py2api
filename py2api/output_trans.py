@@ -1,7 +1,7 @@
 from py2api.constants import TRANS_NOT_FOUND, _OUTPUT_TRANS, _ATTR, _VALTYPE, _ELSE
 
 
-class OutputTrans(object):
+class OutputTrans:
     """
     OutputTrans allows to flexibly define a callable object to convert the output of a function or method.
 

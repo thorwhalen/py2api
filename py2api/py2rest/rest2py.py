@@ -1,12 +1,10 @@
-
-
 import requests
 from requests import Request, Session
 
 DFLT_ROOT_URL = 'https://dev.otosense.ai/'
 
 
-class Rest2Py(object):
+class Rest2Py:
     def __init__(self, root_url, py2rest, attr_list=()):
         self.root_url = root_url
         self.py2rest = py2rest
@@ -30,7 +28,7 @@ class Rest2Py(object):
         pass
 
 
-class API(object):
+class API:
     def __init__(self, root_url=DFLT_ROOT_URL, route_root=None):
         if not root_url.endswith('/'):
             root_url += '/'
@@ -56,7 +54,7 @@ class API(object):
         return requests.get(self.root_url + 'ping')
 
     def call_attr(self, attr, **kwargs):
-        url_suffix = '?attr={attr}'.format(attr=attr)
+        url_suffix = f'?attr={attr}'
         req = self.request(method='POST', url_suffix=url_suffix, json=kwargs)
         if not hasattr(req, 'args'):
             req.args = {'attr': attr}

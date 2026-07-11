@@ -1,5 +1,3 @@
-
-
 FILE_FIELD = 'file'  # TODO: Change to '_file' ?
 FLASK_REQ_FILE_FILED = 'file'
 

@@ -35,7 +35,7 @@ import operator
 
 # This is the controller code (usually a separate module) ##############################################################
 
-class FloatCalculator(object):
+class FloatCalculator:
     """
     A float Calculator (that is, division will be as expected).
     """
@@ -52,7 +52,7 @@ class FloatCalculator(object):
         return op(x, y)
 
 
-class IntCalculator(object):
+class IntCalculator:
     whoami = 'an int calculator'
 
     def compute(self, x, op, y):
@@ -66,7 +66,7 @@ class IntCalculator(object):
         return int(op(x, y))
 
 
-class Controller(object):
+class Controller:
     def __init__(self, user='world', dflt_greeting='Hello'):
         self.user = user
         self.dflt_greeting = dflt_greeting
@@ -76,7 +76,7 @@ class Controller(object):
     def greet(self, greeting=None):
         if greeting is None:
             greeting = self.dflt_greeting
-        return "{} {}!".format(greeting, self.user)
+        return f"{greeting} {self.user}!"
 
     def do_not_give_access_to_this(self):
         return "it's a secret"
@@ -101,7 +101,7 @@ def get_float_operator_func(op):
     if op_func is not None:
         return op_func
     else:
-        raise ValueError("No such operation: {}".format(op))
+        raise ValueError(f"No such operation: {op}")
 
 
 def get_int_operator_func(op):
@@ -109,7 +109,7 @@ def get_int_operator_func(op):
     if op_func is not None:
         return op_func
     else:
-        raise ValueError("No such operation: {}".format(op))
+        raise ValueError(f"No such operation: {op}")
 
 
 input_trans = InputTrans(

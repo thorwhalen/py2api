@@ -1,5 +1,3 @@
-
-
 import json
 import re
 from inspect import getargspec
@@ -22,7 +20,7 @@ def _strigify_val(val):
     elif callable(val) or isinstance(val, type):
         return val.__name__
     else:
-        return "{}".format(val)
+        return f"{val}"
 
 
 def enhanced_docstr(func):
@@ -54,22 +52,22 @@ def enhanced_docstr(func):
     args_strings += argspec.args[:-len(dflts)]
     args_strings += ["{}={}".format(*x) for x in zip(argspec.args[-len(dflts):], dflts)]
     if argspec.varargs is not None:
-        args_strings += ["*{}".format(argspec.varargs)]
+        args_strings += [f"*{argspec.varargs}"]
     if argspec.keywords is not None:
-        args_strings += ["**{}".format(argspec.keywords)]
+        args_strings += [f"**{argspec.keywords}"]
 
     func_spec = "{funcname}({args_strings})".format(
         funcname=func.__name__, args_strings=", ".join(args_strings))
 
     if func.__doc__ is not None:
-        return "{}\n{}".format(func_spec, func.__doc__)
+        return f"{func_spec}\n{func.__doc__}"
     else:
         return func_spec
 
 
-class PermissibleAttr(object):
+class PermissibleAttr:
     def __init__(self, permissible_attrs=None):
-        """
+        r"""
         A class whose objects are callable and play the role of an attribute filter.
         The use of this class is to construct a function that will allow or disallow specific attributes to be
         accessed by an ObjWrap.
@@ -115,7 +113,7 @@ def argname_based_specs_from(specs):
 
 
 def get_pattern_from_attr_permissions_dict(attr_permissions):
-    """
+    r"""
     Construct a compiled regular expression from a permissions dict containing a list of what to include and exclude.
     Will be used in ObjWrapper if permissible_attr_pattern is a dict.
     Note that the function enforces certain patterns (like inclusions ending with $ unless they end with *, etc.
@@ -152,7 +150,7 @@ def get_pattern_from_attr_permissions_dict(attr_permissions):
             if not include.endswith('$'):
                 include += '$'
         else:  # ends with "*"
-            if include.endswith('\.*'):
+            if include.endswith(r'\.*'):
                 # assume that's not what the user meant, so change
                 include = include[:-3] + '.*'
             elif include[-2] != '.':
@@ -168,7 +166,7 @@ def get_pattern_from_attr_permissions_dict(attr_permissions):
             # add to exclude all subpaths if not explicitly ending with "$"
             exclude += '.*'
         else:  # ends with "*"
-            if exclude.endswith('\.*'):
+            if exclude.endswith(r'\.*'):
                 # assume that's not what the user meant, so change
                 exclude = exclude[:-3] + '.*'
             elif exclude[-2] != '.':
