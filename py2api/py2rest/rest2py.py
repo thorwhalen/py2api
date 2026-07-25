@@ -1,3 +1,5 @@
+"""Client helpers to call a py2api REST service from Python."""
+
 import requests
 from requests import Request, Session
 

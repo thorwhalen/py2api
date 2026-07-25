@@ -1,3 +1,7 @@
+"""Output transformation: build callables that convert the output of wrapped
+functions and methods (e.g. to JSON-serializable forms) for the API layer.
+"""
+
 from py2api.constants import TRANS_NOT_FOUND, _OUTPUT_TRANS, _ATTR, _VALTYPE, _ELSE
 
 
