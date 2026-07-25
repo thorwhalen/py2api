@@ -1,3 +1,5 @@
+"""Constant names used by the py2api REST layer."""
+
 FILE_FIELD = 'file'  # TODO: Change to '_file' ?
 FLASK_REQ_FILE_FILED = 'file'
 

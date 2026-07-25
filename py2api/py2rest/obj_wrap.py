@@ -1,3 +1,5 @@
+"""Web-facing object wrapper (adds LRU caching) for the REST layer."""
+
 from functools import lru_cache
 from py2api.defaults import DFLT_LRU_CACHE_SIZE
 from py2api import ObjWrap

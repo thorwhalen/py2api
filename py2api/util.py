@@ -1,6 +1,10 @@
+"""Utilities for py2api: attribute-permission filters, docstring enhancement,
+and output-to-JSON conversion helpers used by the object wrappers.
+"""
+
 import json
 import re
-from inspect import getargspec
+from inspect import getfullargspec
 
 from .defaults import DFLT_RESULT_FIELD
 
@@ -43,7 +47,7 @@ def enhanced_docstr(func):
     some documentation...
     >>>
     """
-    argspec = getargspec(func)
+    argspec = getfullargspec(func)
 
     dflts = argspec.defaults or list()
     dflts = list(map(_strigify_val, dflts))
@@ -53,8 +57,8 @@ def enhanced_docstr(func):
     args_strings += ["{}={}".format(*x) for x in zip(argspec.args[-len(dflts):], dflts)]
     if argspec.varargs is not None:
         args_strings += [f"*{argspec.varargs}"]
-    if argspec.keywords is not None:
-        args_strings += [f"**{argspec.keywords}"]
+    if argspec.varkw is not None:
+        args_strings += [f"**{argspec.varkw}"]
 
     func_spec = "{funcname}({args_strings})".format(
         funcname=func.__name__, args_strings=", ".join(args_strings))

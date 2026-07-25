@@ -1,3 +1,5 @@
+"""Build a Flask app that serves a py2api object wrapper over HTTP."""
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError

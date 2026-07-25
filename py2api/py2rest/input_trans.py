@@ -1,3 +1,7 @@
+"""Input transformation for the REST layer: parse request arguments into the
+Python call arguments expected by the wrapped object.
+"""
+
 import re
 
 from py2api.constants import TRANS_NOT_FOUND, ATTR

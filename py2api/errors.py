@@ -1,3 +1,6 @@
+"""Exception types raised by py2api wrappers (client/attribute-access errors)."""
+
+
 class ClientError(Exception):
     status_code = 400
 

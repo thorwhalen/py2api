@@ -1,3 +1,6 @@
+"""Shared constant names and sentinel values used across py2api."""
+
+
 class TransNotFound:
     pass
 
