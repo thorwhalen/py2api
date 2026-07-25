@@ -46,8 +46,10 @@ class OutputTrans:
         >>> output_trans(['not', 'a', 'dict'], attr='yet_another_attr')
         {'result': ['not', 'a', 'dict']}
         >>>
-        >>> # An example of type-based conversion, using pandas and numpy if present
-        >>> try:
+        >>> # An example of type-based conversion, using pandas and numpy if
+        >>> # present. Skipped from doctest since pandas/numpy are optional
+        >>> # (not package dependencies), so this must not gate CI.
+        >>> try:  # doctest: +SKIP
         ...     import pandas as pd
         ...     import numpy as np
         ...     trans_spec = {
