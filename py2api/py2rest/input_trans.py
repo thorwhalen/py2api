@@ -8,9 +8,7 @@ from py2api.constants import TRANS_NOT_FOUND, ATTR
 from py2api.constants import _ATTR, _ARGNAME, _ELSE
 from py2api.py2rest.constants import _ARGS, _JSON, _ROUTE, _SOURCE
 
-DFLT_TRANS = {
-    _ARGS: {'type': str}
-}
+DFLT_TRANS = {_ARGS: {"type": str}}
 
 
 def _preprocess_trans_dict(trans_dict):
@@ -18,20 +16,20 @@ def _preprocess_trans_dict(trans_dict):
         trans_dict = dict()
     assert isinstance(trans_dict, dict), "trans_dict must be a dict"
     if _ARGS not in trans_dict:
-        trans_dict['_arg'] = dict()
+        trans_dict["_arg"] = dict()
     if _JSON not in trans_dict:
-        trans_dict['_json'] = dict()
+        trans_dict["_json"] = dict()
     return trans_dict
 
 
 def get_request_data_from_source(request, source):
     if source == _JSON:
-        if hasattr(request, 'json') and request.json:
+        if hasattr(request, "json") and request.json:
             return list(request.json.items())
         else:
             return {}
     elif source == _ARGS:
-        if hasattr(request, 'args') and request.args:
+        if hasattr(request, "args") and request.args:
             return list(request.args.items())
         else:
             return {}
@@ -249,25 +247,33 @@ class InputTrans:
 
                 def search_in_field(trans_spec, field, field_val):
                     trans_func = TRANS_NOT_FOUND
-                    _trans_spec = trans_spec.get(field, {}).get(field_val, TRANS_NOT_FOUND)
+                    _trans_spec = trans_spec.get(field, {}).get(
+                        field_val, TRANS_NOT_FOUND
+                    )
                     if _trans_spec:
-                        trans_func = self.search_trans_func(attr, argname, val, trans_spec=_trans_spec, source=source)
+                        trans_func = self.search_trans_func(
+                            attr, argname, val, trans_spec=_trans_spec, source=source
+                        )
 
                     return trans_func
 
                 ############### search _SOURCE, _ATTR, and _ARGNAME ###############
                 # TODO: Would like to include as search_in_field(trans_spec, _SOURCE, source) in the or below.
-                if source is not None:  # only do this if there's an actual source specified
+                if (
+                    source is not None
+                ):  # only do this if there's an actual source specified
                     _trans_spec = trans_spec.get(_SOURCE, {}).get(source, {})
                     if _trans_spec:
-                        trans_func = self.search_trans_func(attr, argname, val, trans_spec=_trans_spec, source=source)
+                        trans_func = self.search_trans_func(
+                            attr, argname, val, trans_spec=_trans_spec, source=source
+                        )
 
                     if trans_func is not TRANS_NOT_FOUND:
                         return trans_func
 
-                trans_func = \
-                    search_in_field(trans_spec, _ATTR, attr) \
-                    or search_in_field(trans_spec, _ARGNAME, argname)
+                trans_func = search_in_field(
+                    trans_spec, _ATTR, attr
+                ) or search_in_field(trans_spec, _ARGNAME, argname)
 
                 # ############### search _SOURCE ###############
                 # if source is not None:  # only do this if there's an actual source specified
@@ -300,9 +306,9 @@ class InputTrans:
                 ############### _ELSE ###############
                 _trans_spec = trans_spec.get(_ELSE, TRANS_NOT_FOUND)
                 if _trans_spec:
-                    trans_func = self.search_trans_func(attr, argname, val,
-                                                        trans_spec=_trans_spec,
-                                                        source=source)
+                    trans_func = self.search_trans_func(
+                        attr, argname, val, trans_spec=_trans_spec, source=source
+                    )
                 if trans_func is not TRANS_NOT_FOUND:
                     return trans_func
                 else:
@@ -337,12 +343,19 @@ class InputTrans:
             if source == _ROUTE:
                 request_data = route_args
             else:
-                request_data = get_request_data_from_source(request, source)  # get the data (dict) of this source
-            for argname, val in request_data:  # loop through the (arg, val) pairs of this data...
+                request_data = get_request_data_from_source(
+                    request, source
+                )  # get the data (dict) of this source
+            for (
+                argname,
+                val,
+            ) in request_data:  # loop through the (arg, val) pairs of this data...
                 if argname == ATTR:
                     continue
                 # ... and see if there's a trans_func to convert the val
-                trans_func = self.search_trans_func(attr, argname, val, trans_spec=self.trans_spec, source=source)
+                trans_func = self.search_trans_func(
+                    attr, argname, val, trans_spec=self.trans_spec, source=source
+                )
                 if trans_func is not TRANS_NOT_FOUND:  # if there is...
                     input_dict[argname] = trans_func(val)  # ... convert the val
                 else:  # if there's not...
@@ -353,7 +366,7 @@ class InputTrans:
         return attr, input_dict
 
 
-re_type = type(re.compile('.'))
+re_type = type(re.compile("."))
 
 
 class InputTransWithAttrInURL(InputTrans):
@@ -361,7 +374,13 @@ class InputTransWithAttrInURL(InputTrans):
     Version of (py2rest) InputTrans that gets its attr from the url itself.
     """
 
-    def __init__(self, trans_spec=None, dflt_spec=None, sources=(_JSON, _ARGS, _ROUTE), attr_from_url=r'(\w+)$'):
+    def __init__(
+        self,
+        trans_spec=None,
+        dflt_spec=None,
+        sources=(_JSON, _ARGS, _ROUTE),
+        attr_from_url=r"(\w+)$",
+    ):
         super().__init__(trans_spec=trans_spec, dflt_spec=dflt_spec, sources=sources)
         if not callable(attr_from_url):
             if isinstance(attr_from_url, str):
@@ -369,7 +388,9 @@ class InputTransWithAttrInURL(InputTrans):
             elif isinstance(attr_from_url, re_type):
                 _attr_from_url = attr_from_url
             else:
-                raise TypeError("attr_from_url must be a callable or a (token matching) regular expression.")
+                raise TypeError(
+                    "attr_from_url must be a callable or a (token matching) regular expression."
+                )
 
             def __attr_from_url(url):
                 m = _attr_from_url.search(url)

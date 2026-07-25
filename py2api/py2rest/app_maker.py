@@ -18,7 +18,7 @@ class ClientError(Exception):
 
     def to_dict(self):
         rv = dict(self.payload or ())
-        rv['message'] = self.message
+        rv["message"] = self.message
         return rv
 
 
@@ -38,7 +38,7 @@ def route_wrapper(route_ow, route_name=None):
 def mk_app(app_name, routes=None, app_config=None, cors=True):
     app = Flask(app_name)
     if app_config is None:
-        app_config = {'JSON_AS_ASCII': False}
+        app_config = {"JSON_AS_ASCII": False}
     for k, v in list(app_config.items()):
         app.config[k] = v
     if cors:
@@ -51,8 +51,11 @@ def mk_app(app_name, routes=None, app_config=None, cors=True):
     @app.errorhandler(InternalServerError)
     def handle_internal_server_error(e):
         print(f"General error: {e}")
-        response = jsonify(success=False, error="InternalServerError",
-                           message=f"Failed to perform action: {str(e)}")
+        response = jsonify(
+            success=False,
+            error="InternalServerError",
+            message=f"Failed to perform action: {str(e)}",
+        )
         response.status_code = 500
         # this_logger.exception('{} InternalServerError default catch: Exception with stack trace!'.format(app_name))
         return response
@@ -82,7 +85,7 @@ def add_routes_to_app(app, routes):
         routes = _routes
 
     for route_func in routes:
-        app.route(route_func.__name__, methods=['GET', 'POST'])(route_func)
+        app.route(route_func.__name__, methods=["GET", "POST"])(route_func)
 
     return app
 
@@ -90,13 +93,13 @@ def add_routes_to_app(app, routes):
 def dflt_run_app_kwargs():
     dflt_kwargs = dict()
 
-    dflt_kwargs['host'] = '0.0.0.0'
-    dflt_kwargs['port'] = 5000
+    dflt_kwargs["host"] = "0.0.0.0"
+    dflt_kwargs["port"] = 5000
 
-    if this_system() == 'Linux':
-        dflt_kwargs['debug'] = 0
+    if this_system() == "Linux":
+        dflt_kwargs["debug"] = 0
     else:
-        dflt_kwargs['debug'] = 1
+        dflt_kwargs["debug"] = 1
 
     return dflt_kwargs
 
@@ -111,7 +114,9 @@ class Struct:
         self.__dict__.update(attrs)
 
 
-def dispatch_funcs_to_web_app(funcs, input_trans=None, output_trans=None, name='py2api', debug=0):
+def dispatch_funcs_to_web_app(
+    funcs, input_trans=None, output_trans=None, name="py2api", debug=0
+):
     if not isinstance(funcs, (list, tuple)) or callable(funcs):
         funcs = [funcs]
     if input_trans is None:
@@ -123,12 +128,14 @@ def dispatch_funcs_to_web_app(funcs, input_trans=None, output_trans=None, name='
 
     s = Struct(**{func.__name__: func for func in funcs})
 
-    wrap = WebObjWrapper(obj_constructor=s,  # wrap this current module
-                         obj_constructor_arg_names=[],  # no construction, so no construction args
-                         permissible_attr=[func.__name__ for func in funcs],
-                         input_trans=input_trans,
-                         output_trans=output_trans,
-                         name='/',
-                         debug=debug)
+    wrap = WebObjWrapper(
+        obj_constructor=s,  # wrap this current module
+        obj_constructor_arg_names=[],  # no construction, so no construction args
+        permissible_attr=[func.__name__ for func in funcs],
+        input_trans=input_trans,
+        output_trans=output_trans,
+        name="/",
+        debug=debug,
+    )
 
     return mk_app(app_name=name, routes=[wrap])

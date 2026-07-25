@@ -9,7 +9,12 @@ minimum-necessary code, crucial, for instance, for micro-services.
 """
 
 from py2api.errors import MissingAttribute, ForbiddenAttribute
-from py2api.util import PermissibleAttr, default_to_jdict, get_attr_recursively, enhanced_docstr
+from py2api.util import (
+    PermissibleAttr,
+    default_to_jdict,
+    get_attr_recursively,
+    enhanced_docstr,
+)
 from py2api.constants import _OUTPUT_TRANS, _HELP
 
 ########################################################################################################################
@@ -25,14 +30,16 @@ so as to have extra protection against collision.
 
 
 class ObjWrap:
-    def __init__(self,
-                 obj_constructor=None,
-                 obj_constructor_arg_names=None,  # used to determine the params of the object constructors
-                 permissible_attr=None,
-                 input_trans=None,  # input processing: Callable specifying how to prepare arguments for methods
-                 output_trans=None,  # output processing: Function to convert output
-                 name=None,
-                 debug=0):
+    def __init__(
+        self,
+        obj_constructor=None,
+        obj_constructor_arg_names=None,  # used to determine the params of the object constructors
+        permissible_attr=None,
+        input_trans=None,  # input processing: Callable specifying how to prepare arguments for methods
+        output_trans=None,  # output processing: Function to convert output
+        name=None,
+        debug=0,
+    ):
         """
         An class that constructs a wrapper around an object.
         An object could be a function, module, or instantiated class object (the usual case).
@@ -73,7 +80,9 @@ class ObjWrap:
 
         if obj_constructor_arg_names is None:  # no constructor arguments
             obj_constructor_arg_names = []
-        elif isinstance(obj_constructor_arg_names, str):  # a single constructor argument
+        elif isinstance(
+            obj_constructor_arg_names, str
+        ):  # a single constructor argument
             obj_constructor_arg_names = [obj_constructor_arg_names]
         self.obj_constructor_arg_names = obj_constructor_arg_names
 
@@ -88,8 +97,10 @@ class ObjWrap:
 
         # self.obj_wrap = obj_wrap
         if output_trans is None:
+
             def _output_trans(result, *args, **kwargs):
                 return result
+
             self.output_trans = _output_trans
         else:
             assert callable(output_trans), "input_trans needs to be a callable"
@@ -123,7 +134,9 @@ class ObjWrap:
 
         # at this point obj is an actual obj_constructor constructed object...
         # ... so get the leaf (attr) object
-        return get_attr_recursively(obj_spec, attr)  # get the (possibly nested) attribute object
+        return get_attr_recursively(
+            obj_spec, attr
+        )  # get the (possibly nested) attribute object
 
     def __call__(self, request, **route_args):
         """
@@ -157,7 +170,11 @@ class ObjWrap:
 
         ###### Get or construct the attribute object being accessed ####################################################
         # pop off any arguments that are meant to be for the base obj (module, function, class instance) constructor
-        obj_kwargs = {k: input_data.pop(k) for k in self.obj_constructor_arg_names if k in input_data}
+        obj_kwargs = {
+            k: input_data.pop(k)
+            for k in self.obj_constructor_arg_names
+            if k in input_data
+        }
 
         if self.debug:
             print(f"attr={attr}, obj_kwargs = {obj_kwargs}, input_data = {input_data}")
@@ -185,16 +202,18 @@ class ObjWrap:
         return self.output_trans(result, attr, output_trans=output_trans)
 
     @classmethod
-    def with_decorators(cls,
-                        constructor_decorator=None,
-                        # obj_attr_decorator=None,
-                        obj_constructor=None,
-                        obj_constructor_arg_names=None,
-                        permissible_attr=None,
-                        input_trans=None,
-                        output_trans=default_to_jdict,
-                        name=None,
-                        debug=0):
+    def with_decorators(
+        cls,
+        constructor_decorator=None,
+        # obj_attr_decorator=None,
+        obj_constructor=None,
+        obj_constructor_arg_names=None,
+        permissible_attr=None,
+        input_trans=None,
+        output_trans=default_to_jdict,
+        name=None,
+        debug=0,
+    ):
         if constructor_decorator is not None:
             wrapped_obj_constructor = constructor_decorator(obj_constructor)
         else:
@@ -203,14 +222,15 @@ class ObjWrap:
         # if self.obj_wrap is not None:  # might need to wrap that obj_attr?
         #     _obj_attr = self.obj_wrap(_obj_attr, attr)  # wrap it (if obj_wrap says to)
 
-        return cls(obj_constructor=wrapped_obj_constructor,
-                   obj_constructor_arg_names=obj_constructor_arg_names,
-                   permissible_attr=permissible_attr,
-                   input_trans=input_trans,
-                   output_trans=output_trans,
-                   name=name,
-                   debug=debug)
-
+        return cls(
+            obj_constructor=wrapped_obj_constructor,
+            obj_constructor_arg_names=obj_constructor_arg_names,
+            permissible_attr=permissible_attr,
+            input_trans=input_trans,
+            output_trans=output_trans,
+            name=name,
+            debug=debug,
+        )
 
         # :param: obj_wrap: None (default), or a decorator; a callable that takes the (obj, attr, input_data) triple and
         #     returns the actual (obj, input_data) that needs to be used. This is usually used when we need to modify

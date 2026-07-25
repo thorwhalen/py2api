@@ -13,7 +13,7 @@ class ClientError(Exception):
 
     def to_dict(self):
         rv = dict(self.payload or ())
-        rv['message'] = self.message
+        rv["message"] = self.message
         return rv
 
 
@@ -42,8 +42,11 @@ class ForbiddenProperty(Forbidden):
 
 
 class MissingAttribute(BadRequest):
-    def __init__(self, message="No attribute (method or property) was specified.", payload=None):
+    def __init__(
+        self, message="No attribute (method or property) was specified.", payload=None
+    ):
         super(self.__class__, self).__init__(message, payload)
+
 
 # class EmptyResponse(ClientError):
 #     status_code = 400

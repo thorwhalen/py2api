@@ -85,10 +85,13 @@ class OutputTrans:
             elif len(trans_spec) > 0:
                 ############### search _OUTPUT_TRANS #######
                 if output_trans is not None:
-                    _trans_spec = trans_spec.get(_OUTPUT_TRANS, {}).get(output_trans, {})
+                    _trans_spec = trans_spec.get(_OUTPUT_TRANS, {}).get(
+                        output_trans, {}
+                    )
                     if _trans_spec:
                         trans_func = self.search_trans_func(
-                            attr, val, trans_spec=_trans_spec, output_trans=output_trans)
+                            attr, val, trans_spec=_trans_spec, output_trans=output_trans
+                        )
 
                         if trans_func is not TRANS_NOT_FOUND:
                             return trans_func
@@ -96,7 +99,9 @@ class OutputTrans:
                 ############### search _ATTR ###############
                 _trans_spec = trans_spec.get(_ATTR, {}).get(attr, {})
                 if _trans_spec:
-                    trans_func = self.search_trans_func(attr, val, trans_spec=_trans_spec)
+                    trans_func = self.search_trans_func(
+                        attr, val, trans_spec=_trans_spec
+                    )
 
                 if trans_func is not TRANS_NOT_FOUND:
                     return trans_func
@@ -114,7 +119,9 @@ class OutputTrans:
                     return TRANS_NOT_FOUND
 
     def __call__(self, val, attr=None, output_trans=None):
-        trans_func = self.search_trans_func(attr, val, trans_spec=self.trans_spec, output_trans=output_trans)
+        trans_func = self.search_trans_func(
+            attr, val, trans_spec=self.trans_spec, output_trans=output_trans
+        )
         if trans_func is not TRANS_NOT_FOUND:  # if there is...
             trans_val = trans_func(val)  # ... convert the val
         else:  # if there's not...

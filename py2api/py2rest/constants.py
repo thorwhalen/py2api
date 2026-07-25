@@ -1,12 +1,12 @@
 """Constant names used by the py2api REST layer."""
 
-FILE_FIELD = 'file'  # TODO: Change to '_file' ?
-FLASK_REQ_FILE_FILED = 'file'
+FILE_FIELD = "file"  # TODO: Change to '_file' ?
+FLASK_REQ_FILE_FILED = "file"
 
 
-RESULT_FIELD = 'result'  # TODO: Change to '_result'
+RESULT_FIELD = "result"  # TODO: Change to '_result'
 
-_SOURCE = '_source'
-_ARGS = '_args'
-_JSON = '_json'
-_ROUTE = '_route'
+_SOURCE = "_source"
+_ARGS = "_args"
+_JSON = "_json"
+_ROUTE = "_route"

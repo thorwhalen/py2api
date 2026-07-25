@@ -53,15 +53,18 @@ def enhanced_docstr(func):
     dflts = list(map(_strigify_val, dflts))
 
     args_strings = list()
-    args_strings += argspec.args[:-len(dflts)]
-    args_strings += ["{}={}".format(*x) for x in zip(argspec.args[-len(dflts):], dflts)]
+    args_strings += argspec.args[: -len(dflts)]
+    args_strings += [
+        "{}={}".format(*x) for x in zip(argspec.args[-len(dflts) :], dflts)
+    ]
     if argspec.varargs is not None:
         args_strings += [f"*{argspec.varargs}"]
     if argspec.varkw is not None:
         args_strings += [f"**{argspec.varkw}"]
 
     func_spec = "{funcname}({args_strings})".format(
-        funcname=func.__name__, args_strings=", ".join(args_strings))
+        funcname=func.__name__, args_strings=", ".join(args_strings)
+    )
 
     if func.__doc__ is not None:
         return f"{func_spec}\n{func.__doc__}"
@@ -91,12 +94,16 @@ class PermissibleAttr:
         """
         self.permissible_attrs = permissible_attrs
         if not permissible_attrs:  # we don't want to allow any attributes
-            permissible_attrs = re.compile('0')  # no attribute can have that pattern (can't start with a numerical)
+            permissible_attrs = re.compile(
+                "0"
+            )  # no attribute can have that pattern (can't start with a numerical)
         else:
             if isinstance(permissible_attrs, (list, tuple)):
-                permissible_attrs = {'include': permissible_attrs}
+                permissible_attrs = {"include": permissible_attrs}
             if isinstance(permissible_attrs, dict):
-                permissible_attrs = get_pattern_from_attr_permissions_dict(permissible_attrs)
+                permissible_attrs = get_pattern_from_attr_permissions_dict(
+                    permissible_attrs
+                )
             else:
                 permissible_attrs = re.compile(permissible_attrs)
         self.permissible_attr_pattern = permissible_attrs
@@ -109,7 +116,7 @@ def obj_str_from_obj(obj):
     try:
         return obj.__class__.__name__
     except AttributeError:
-        return 'obj'
+        return "obj"
 
 
 def argname_based_specs_from(specs):
@@ -149,36 +156,36 @@ def get_pattern_from_attr_permissions_dict(attr_permissions):
 
     # process inclusions
     corrected_list = []
-    for include in attr_permissions.get('include', []):
-        if not include.endswith('*'):
-            if not include.endswith('$'):
-                include += '$'
+    for include in attr_permissions.get("include", []):
+        if not include.endswith("*"):
+            if not include.endswith("$"):
+                include += "$"
         else:  # ends with "*"
-            if include.endswith(r'\.*'):
+            if include.endswith(r"\.*"):
                 # assume that's not what the user meant, so change
-                include = include[:-3] + '.*'
-            elif include[-2] != '.':
+                include = include[:-3] + ".*"
+            elif include[-2] != ".":
                 # assume that's not what the user meant, so change
-                include = include[:-1] + '.*'
+                include = include[:-1] + ".*"
         corrected_list.append(include)
-    s += '|'.join(corrected_list)
+    s += "|".join(corrected_list)
 
     # process exclusions
     corrected_list = []
-    for exclude in attr_permissions.get('exclude', []):
-        if not exclude.endswith('$') and not exclude.endswith('*'):
+    for exclude in attr_permissions.get("exclude", []):
+        if not exclude.endswith("$") and not exclude.endswith("*"):
             # add to exclude all subpaths if not explicitly ending with "$"
-            exclude += '.*'
+            exclude += ".*"
         else:  # ends with "*"
-            if exclude.endswith(r'\.*'):
+            if exclude.endswith(r"\.*"):
                 # assume that's not what the user meant, so change
-                exclude = exclude[:-3] + '.*'
-            elif exclude[-2] != '.':
+                exclude = exclude[:-3] + ".*"
+            elif exclude[-2] != ".":
                 # assume that's not what the user meant, so change
-                exclude = exclude[:-1] + '.*'
+                exclude = exclude[:-1] + ".*"
         corrected_list.append(exclude)
     if corrected_list:
-        s += '(?!' + '|'.join(corrected_list) + ')'
+        s += "(?!" + "|".join(corrected_list) + ")"
 
     return re.compile(s)
 
@@ -187,22 +194,28 @@ def default_to_jdict(result, result_field=DFLT_RESULT_FIELD):
     if isinstance(result, list):
         return {result_field: result}
     elif isinstance(result, dict) and len(result) > 0:
-        first_key, first_val = next(iter(result.items()))  # look at the first key to determine what to do with the dict
+        first_key, first_val = next(
+            iter(result.items())
+        )  # look at the first key to determine what to do with the dict
         if isinstance(first_key, int):
             key_trans = chr
         else:
             key_trans = lambda x: x
         if isinstance(first_val, dict):
-            return {result_field: {key_trans(k): default_to_jdict(v) for k, v in iter(result.items())}}
+            return {
+                result_field: {
+                    key_trans(k): default_to_jdict(v) for k, v in iter(result.items())
+                }
+            }
         else:
             return {key_trans(k): v for k, v in iter(result.items())}
-    elif hasattr(result, 'to_json'):
+    elif hasattr(result, "to_json"):
         return json.loads(result.to_json())
     else:
         try:
             return {result_field: result}
         except TypeError:
-            if hasattr(result, 'next'):
+            if hasattr(result, "next"):
                 return {result_field: list(result)}
             else:
                 return {result_field: str(result)}
@@ -210,7 +223,7 @@ def default_to_jdict(result, result_field=DFLT_RESULT_FIELD):
 
 def get_attr_recursively(obj, attr, default=None):
     try:
-        for attr_str in attr.split('.'):
+        for attr_str in attr.split("."):
             obj = getattr(obj, attr_str)
         return obj
     except AttributeError:
