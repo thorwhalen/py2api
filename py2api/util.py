@@ -45,7 +45,15 @@ def enhanced_docstr(func):
     >>> print(enhanced_docstr(foo))
     foo(a, b=3, c="as", d=SomeClass, dd=some_function, ddd=None, *args, **kwargs)
     some documentation...
-    >>>
+
+    A function with no default arguments keeps all of its positional args
+    (regression: ``args[:-len(dflts)]`` used to drop them all when ``dflts`` was empty):
+
+    >>> def no_defaults(a, b, c):
+    ...     '''some docs'''
+    >>> print(enhanced_docstr(no_defaults))
+    no_defaults(a, b, c)
+    some docs
     """
     argspec = getfullargspec(func)
 
@@ -53,9 +61,13 @@ def enhanced_docstr(func):
     dflts = list(map(_strigify_val, dflts))
 
     args_strings = list()
-    args_strings += argspec.args[: -len(dflts)]
+    # Number of positional (non-default) args. Computed as a length so that the
+    # no-defaults case works: with len(dflts)==0, args[:-0] would wrongly be []
+    # (since -0 == 0), dropping every positional arg.
+    n_positional = len(argspec.args) - len(dflts)
+    args_strings += argspec.args[:n_positional]
     args_strings += [
-        "{}={}".format(*x) for x in zip(argspec.args[-len(dflts) :], dflts)
+        "{}={}".format(*x) for x in zip(argspec.args[n_positional:], dflts)
     ]
     if argspec.varargs is not None:
         args_strings += [f"*{argspec.varargs}"]
