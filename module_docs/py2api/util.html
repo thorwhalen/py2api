@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>py2api.util &mdash; py2api 0.0.3 documentation</title>
+  <title>py2api.util &mdash; py2api 0.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -118,8 +118,16 @@ and output-to-JSON conversion helpers used by the object wrappers.</p>
 …     pass
 &gt;&gt;&gt; print(enhanced_docstr(foo))
 foo(a, b=3, c=”as”, d=SomeClass, dd=some_function, ddd=None, <a href="#id5"><span class="problematic" id="id6">*</span></a>args, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)
-some documentation…
-&gt;&gt;&gt;</p>
+some documentation…</p>
+<p>A function with no default arguments keeps all of its positional args
+(regression: <code class="docutils literal notranslate"><span class="pre">args[:-len(dflts)]</span></code> used to drop them all when <code class="docutils literal notranslate"><span class="pre">dflts</span></code> was empty):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">no_defaults</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&#39;&#39;&#39;some docs&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">enhanced_docstr</span><span class="p">(</span><span class="n">no_defaults</span><span class="p">))</span>
+<span class="go">no_defaults(a, b, c)</span>
+<span class="go">some docs</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

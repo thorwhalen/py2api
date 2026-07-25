@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>py2api.util &mdash; py2api 0.0.3 documentation</title>
+  <title>py2api.util &mdash; py2api 0.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -140,7 +140,15 @@
 <span class="sd">    &gt;&gt;&gt; print(enhanced_docstr(foo))</span>
 <span class="sd">    foo(a, b=3, c=&quot;as&quot;, d=SomeClass, dd=some_function, ddd=None, *args, **kwargs)</span>
 <span class="sd">    some documentation...</span>
-<span class="sd">    &gt;&gt;&gt;</span>
+
+<span class="sd">    A function with no default arguments keeps all of its positional args</span>
+<span class="sd">    (regression: ``args[:-len(dflts)]`` used to drop them all when ``dflts`` was empty):</span>
+
+<span class="sd">    &gt;&gt;&gt; def no_defaults(a, b, c):</span>
+<span class="sd">    ...     &#39;&#39;&#39;some docs&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; print(enhanced_docstr(no_defaults))</span>
+<span class="sd">    no_defaults(a, b, c)</span>
+<span class="sd">    some docs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">argspec</span> <span class="o">=</span> <span class="n">getfullargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 
@@ -148,15 +156,22 @@
     <span class="n">dflts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_strigify_val</span><span class="p">,</span> <span class="n">dflts</span><span class="p">))</span>
 
     <span class="n">args_strings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">args_strings</span> <span class="o">+=</span> <span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">dflts</span><span class="p">)]</span>
-    <span class="n">args_strings</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">dflts</span><span class="p">):],</span> <span class="n">dflts</span><span class="p">)]</span>
+    <span class="c1"># Number of positional (non-default) args. Computed as a length so that the</span>
+    <span class="c1"># no-defaults case works: with len(dflts)==0, args[:-0] would wrongly be []</span>
+    <span class="c1"># (since -0 == 0), dropping every positional arg.</span>
+    <span class="n">n_positional</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dflts</span><span class="p">)</span>
+    <span class="n">args_strings</span> <span class="o">+=</span> <span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="n">n_positional</span><span class="p">]</span>
+    <span class="n">args_strings</span> <span class="o">+=</span> <span class="p">[</span>
+        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">argspec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">n_positional</span><span class="p">:],</span> <span class="n">dflts</span><span class="p">)</span>
+    <span class="p">]</span>
     <span class="k">if</span> <span class="n">argspec</span><span class="o">.</span><span class="n">varargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">args_strings</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">argspec</span><span class="o">.</span><span class="n">varargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">argspec</span><span class="o">.</span><span class="n">varkw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">args_strings</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">argspec</span><span class="o">.</span><span class="n">varkw</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
     <span class="n">func_spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{funcname}</span><span class="s2">(</span><span class="si">{args_strings}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">funcname</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args_strings</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args_strings</span><span class="p">))</span>
+        <span class="n">funcname</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args_strings</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args_strings</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_spec</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -187,12 +202,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">permissible_attrs</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">permissible_attrs</span><span class="p">:</span>  <span class="c1"># we don&#39;t want to allow any attributes</span>
-            <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>  <span class="c1"># no attribute can have that pattern (can&#39;t start with a numerical)</span>
+            <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+                <span class="s2">&quot;0&quot;</span>
+            <span class="p">)</span>  <span class="c1"># no attribute can have that pattern (can&#39;t start with a numerical)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">permissible_attrs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-                <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;include&#39;</span><span class="p">:</span> <span class="n">permissible_attrs</span><span class="p">}</span>
+                <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;include&quot;</span><span class="p">:</span> <span class="n">permissible_attrs</span><span class="p">}</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">permissible_attrs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">get_pattern_from_attr_permissions_dict</span><span class="p">(</span><span class="n">permissible_attrs</span><span class="p">)</span>
+                <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">get_pattern_from_attr_permissions_dict</span><span class="p">(</span>
+                    <span class="n">permissible_attrs</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">permissible_attrs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">permissible_attrs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">permissible_attr_pattern</span> <span class="o">=</span> <span class="n">permissible_attrs</span>
@@ -205,7 +224,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;obj&#39;</span>
+        <span class="k">return</span> <span class="s2">&quot;obj&quot;</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">argname_based_specs_from</span><span class="p">(</span><span class="n">specs</span><span class="p">):</span>
@@ -247,36 +266,36 @@
 
     <span class="c1"># process inclusions</span>
     <span class="n">corrected_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">attr_permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">):</span>
-                <span class="n">include</span> <span class="o">+=</span> <span class="s1">&#39;$&#39;</span>
+    <span class="k">for</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">attr_permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;include&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">):</span>
+                <span class="n">include</span> <span class="o">+=</span> <span class="s2">&quot;$&quot;</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># ends with &quot;*&quot;</span>
-            <span class="k">if</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.*&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">include</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.*&quot;</span><span class="p">):</span>
                 <span class="c1"># assume that&#39;s not what the user meant, so change</span>
-                <span class="n">include</span> <span class="o">=</span> <span class="n">include</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.*&#39;</span>
-            <span class="k">elif</span> <span class="n">include</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+                <span class="n">include</span> <span class="o">=</span> <span class="n">include</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span>
+            <span class="k">elif</span> <span class="n">include</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
                 <span class="c1"># assume that&#39;s not what the user meant, so change</span>
-                <span class="n">include</span> <span class="o">=</span> <span class="n">include</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.*&#39;</span>
+                <span class="n">include</span> <span class="o">=</span> <span class="n">include</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span>
         <span class="n">corrected_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
-    <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">corrected_list</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">corrected_list</span><span class="p">)</span>
 
     <span class="c1"># process exclusions</span>
     <span class="n">corrected_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">attr_permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;exclude&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">attr_permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exclude&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
             <span class="c1"># add to exclude all subpaths if not explicitly ending with &quot;$&quot;</span>
-            <span class="n">exclude</span> <span class="o">+=</span> <span class="s1">&#39;.*&#39;</span>
+            <span class="n">exclude</span> <span class="o">+=</span> <span class="s2">&quot;.*&quot;</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># ends with &quot;*&quot;</span>
-            <span class="k">if</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.*&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">exclude</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.*&quot;</span><span class="p">):</span>
                 <span class="c1"># assume that&#39;s not what the user meant, so change</span>
-                <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.*&#39;</span>
-            <span class="k">elif</span> <span class="n">exclude</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+                <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span>
+            <span class="k">elif</span> <span class="n">exclude</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
                 <span class="c1"># assume that&#39;s not what the user meant, so change</span>
-                <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.*&#39;</span>
+                <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span>
         <span class="n">corrected_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">corrected_list</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;(?!&#39;</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">corrected_list</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;(?!&quot;</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">corrected_list</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 
@@ -286,22 +305,28 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">result_field</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">first_key</span><span class="p">,</span> <span class="n">first_val</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>  <span class="c1"># look at the first key to determine what to do with the dict</span>
+        <span class="n">first_key</span><span class="p">,</span> <span class="n">first_val</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="p">)</span>  <span class="c1"># look at the first key to determine what to do with the dict</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">key_trans</span> <span class="o">=</span> <span class="nb">chr</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">key_trans</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span><span class="n">result_field</span><span class="p">:</span> <span class="p">{</span><span class="n">key_trans</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">default_to_jdict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">())}}</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">result_field</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">key_trans</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">default_to_jdict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">key_trans</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">())}</span>
-    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;to_json&#39;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;to_json&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">result_field</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;next&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="p">{</span><span class="n">result_field</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">{</span><span class="n">result_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)}</span>
@@ -309,7 +334,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_attr_recursively</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">attr_str</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr_str</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr_str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>

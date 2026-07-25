@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>py2api.py2rest.input_trans &mdash; py2api 0.0.3 documentation</title>
+  <title>py2api.py2rest.input_trans &mdash; py2api 0.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../../_static/documentation_options.js?v=8c5712d9"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -101,9 +101,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">py2api.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ATTR</span><span class="p">,</span> <span class="n">_ARGNAME</span><span class="p">,</span> <span class="n">_ELSE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">py2api.py2rest.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ARGS</span><span class="p">,</span> <span class="n">_JSON</span><span class="p">,</span> <span class="n">_ROUTE</span><span class="p">,</span> <span class="n">_SOURCE</span>
 
-<span class="n">DFLT_TRANS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">_ARGS</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
-<span class="p">}</span>
+<span class="n">DFLT_TRANS</span> <span class="o">=</span> <span class="p">{</span><span class="n">_ARGS</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_preprocess_trans_dict</span><span class="p">(</span><span class="n">trans_dict</span><span class="p">):</span>
@@ -111,20 +109,20 @@
         <span class="n">trans_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s2">&quot;trans_dict must be a dict&quot;</span>
     <span class="k">if</span> <span class="n">_ARGS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trans_dict</span><span class="p">:</span>
-        <span class="n">trans_dict</span><span class="p">[</span><span class="s1">&#39;_arg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">trans_dict</span><span class="p">[</span><span class="s2">&quot;_arg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">_JSON</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trans_dict</span><span class="p">:</span>
-        <span class="n">trans_dict</span><span class="p">[</span><span class="s1">&#39;_json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">trans_dict</span><span class="p">[</span><span class="s2">&quot;_json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">trans_dict</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_request_data_from_source</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="n">_JSON</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
     <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="n">_ARGS</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
@@ -344,25 +342,33 @@
 
                 <span class="k">def</span><span class="w"> </span><span class="nf">search_in_field</span><span class="p">(</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">field_val</span><span class="p">):</span>
                     <span class="n">trans_func</span> <span class="o">=</span> <span class="n">TRANS_NOT_FOUND</span>
-                    <span class="n">_trans_spec</span> <span class="o">=</span> <span class="n">trans_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_val</span><span class="p">,</span> <span class="n">TRANS_NOT_FOUND</span><span class="p">)</span>
+                    <span class="n">_trans_spec</span> <span class="o">=</span> <span class="n">trans_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">field_val</span><span class="p">,</span> <span class="n">TRANS_NOT_FOUND</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">_trans_spec</span><span class="p">:</span>
-                        <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+                        <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span>
+                            <span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span>
+                        <span class="p">)</span>
 
                     <span class="k">return</span> <span class="n">trans_func</span>
 
                 <span class="c1">############### search _SOURCE, _ATTR, and _ARGNAME ###############</span>
                 <span class="c1"># TODO: Would like to include as search_in_field(trans_spec, _SOURCE, source) in the or below.</span>
-                <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># only do this if there&#39;s an actual source specified</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">):</span>  <span class="c1"># only do this if there&#39;s an actual source specified</span>
                     <span class="n">_trans_spec</span> <span class="o">=</span> <span class="n">trans_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_SOURCE</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">{})</span>
                     <span class="k">if</span> <span class="n">_trans_spec</span><span class="p">:</span>
-                        <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+                        <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span>
+                            <span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span>
+                        <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">trans_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TRANS_NOT_FOUND</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">trans_func</span>
 
-                <span class="n">trans_func</span> <span class="o">=</span> \
-                    <span class="n">search_in_field</span><span class="p">(</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">_ATTR</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> \
-                    <span class="ow">or</span> <span class="n">search_in_field</span><span class="p">(</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">_ARGNAME</span><span class="p">,</span> <span class="n">argname</span><span class="p">)</span>
+                <span class="n">trans_func</span> <span class="o">=</span> <span class="n">search_in_field</span><span class="p">(</span>
+                    <span class="n">trans_spec</span><span class="p">,</span> <span class="n">_ATTR</span><span class="p">,</span> <span class="n">attr</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="n">search_in_field</span><span class="p">(</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">_ARGNAME</span><span class="p">,</span> <span class="n">argname</span><span class="p">)</span>
 
                 <span class="c1"># ############### search _SOURCE ###############</span>
                 <span class="c1"># if source is not None:  # only do this if there&#39;s an actual source specified</span>
@@ -395,9 +401,9 @@
                 <span class="c1">############### _ELSE ###############</span>
                 <span class="n">_trans_spec</span> <span class="o">=</span> <span class="n">trans_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_ELSE</span><span class="p">,</span> <span class="n">TRANS_NOT_FOUND</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">_trans_spec</span><span class="p">:</span>
-                    <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span>
-                                                        <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span>
-                                                        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+                    <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span>
+                        <span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="n">_trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="n">trans_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TRANS_NOT_FOUND</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">trans_func</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -432,12 +438,19 @@
             <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="n">_ROUTE</span><span class="p">:</span>
                 <span class="n">request_data</span> <span class="o">=</span> <span class="n">route_args</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">request_data</span> <span class="o">=</span> <span class="n">get_request_data_from_source</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>  <span class="c1"># get the data (dict) of this source</span>
-            <span class="k">for</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">request_data</span><span class="p">:</span>  <span class="c1"># loop through the (arg, val) pairs of this data...</span>
+                <span class="n">request_data</span> <span class="o">=</span> <span class="n">get_request_data_from_source</span><span class="p">(</span>
+                    <span class="n">request</span><span class="p">,</span> <span class="n">source</span>
+                <span class="p">)</span>  <span class="c1"># get the data (dict) of this source</span>
+            <span class="k">for</span> <span class="p">(</span>
+                <span class="n">argname</span><span class="p">,</span>
+                <span class="n">val</span><span class="p">,</span>
+            <span class="p">)</span> <span class="ow">in</span> <span class="n">request_data</span><span class="p">:</span>  <span class="c1"># loop through the (arg, val) pairs of this data...</span>
                 <span class="k">if</span> <span class="n">argname</span> <span class="o">==</span> <span class="n">ATTR</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="c1"># ... and see if there&#39;s a trans_func to convert the val</span>
-                <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+                <span class="n">trans_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_trans_func</span><span class="p">(</span>
+                    <span class="n">attr</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">trans_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TRANS_NOT_FOUND</span><span class="p">:</span>  <span class="c1"># if there is...</span>
                     <span class="n">input_dict</span><span class="p">[</span><span class="n">argname</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_func</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>  <span class="c1"># ... convert the val</span>
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># if there&#39;s not...</span>
@@ -449,7 +462,7 @@
 
 
 
-<span class="n">re_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+<span class="n">re_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="InputTransWithAttrInURL">
@@ -459,7 +472,13 @@
 <span class="sd">    Version of (py2rest) InputTrans that gets its attr from the url itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trans_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dflt_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">(</span><span class="n">_JSON</span><span class="p">,</span> <span class="n">_ARGS</span><span class="p">,</span> <span class="n">_ROUTE</span><span class="p">),</span> <span class="n">attr_from_url</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;(\w+)$&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">trans_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dflt_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sources</span><span class="o">=</span><span class="p">(</span><span class="n">_JSON</span><span class="p">,</span> <span class="n">_ARGS</span><span class="p">,</span> <span class="n">_ROUTE</span><span class="p">),</span>
+        <span class="n">attr_from_url</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;(\w+)$&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trans_spec</span><span class="o">=</span><span class="n">trans_spec</span><span class="p">,</span> <span class="n">dflt_spec</span><span class="o">=</span><span class="n">dflt_spec</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attr_from_url</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_from_url</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -467,7 +486,9 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_from_url</span><span class="p">,</span> <span class="n">re_type</span><span class="p">):</span>
                 <span class="n">_attr_from_url</span> <span class="o">=</span> <span class="n">attr_from_url</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;attr_from_url must be a callable or a (token matching) regular expression.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;attr_from_url must be a callable or a (token matching) regular expression.&quot;</span>
+                <span class="p">)</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">__attr_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
                 <span class="n">m</span> <span class="o">=</span> <span class="n">_attr_from_url</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>

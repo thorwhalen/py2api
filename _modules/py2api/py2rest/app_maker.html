@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>py2api.py2rest.app_maker &mdash; py2api 0.0.3 documentation</title>
+  <title>py2api.py2rest.app_maker &mdash; py2api 0.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../../_static/documentation_options.js?v=8c5712d9"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -113,7 +113,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">rv</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">or</span> <span class="p">())</span>
-        <span class="n">rv</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
+        <span class="n">rv</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
         <span class="k">return</span> <span class="n">rv</span></div>
 
 
@@ -134,7 +134,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">mk_app</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">routes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">app_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">app_name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">app_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">app_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">app_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;JSON_AS_ASCII&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
     <span class="k">if</span> <span class="n">cors</span><span class="p">:</span>
@@ -147,8 +147,11 @@
     <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">InternalServerError</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_internal_server_error</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;General error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;InternalServerError&quot;</span><span class="p">,</span>
-                           <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to perform action: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span>
+            <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="s2">&quot;InternalServerError&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to perform action: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">500</span>
         <span class="c1"># this_logger.exception(&#39;{} InternalServerError default catch: Exception with stack trace!&#39;.format(app_name))</span>
         <span class="k">return</span> <span class="n">response</span>
@@ -178,7 +181,7 @@
         <span class="n">routes</span> <span class="o">=</span> <span class="n">_routes</span>
 
     <span class="k">for</span> <span class="n">route_func</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">route_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])(</span><span class="n">route_func</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">route_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">])(</span><span class="n">route_func</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span>
 
@@ -186,13 +189,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">dflt_run_app_kwargs</span><span class="p">():</span>
     <span class="n">dflt_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
-    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span>
+    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span>
 
-    <span class="k">if</span> <span class="n">this_system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">:</span>
-        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">this_system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span><span class="p">:</span>
+        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">dflt_kwargs</span>
 
@@ -207,7 +210,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">dispatch_funcs_to_web_app</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="n">input_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;py2api&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dispatch_funcs_to_web_app</span><span class="p">(</span>
+    <span class="n">funcs</span><span class="p">,</span> <span class="n">input_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;py2api&quot;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">funcs</span><span class="p">):</span>
         <span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">funcs</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">input_trans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -219,13 +224,15 @@
 
     <span class="n">s</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">func</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">})</span>
 
-    <span class="n">wrap</span> <span class="o">=</span> <span class="n">WebObjWrapper</span><span class="p">(</span><span class="n">obj_constructor</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>  <span class="c1"># wrap this current module</span>
-                         <span class="n">obj_constructor_arg_names</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># no construction, so no construction args</span>
-                         <span class="n">permissible_attr</span><span class="o">=</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">],</span>
-                         <span class="n">input_trans</span><span class="o">=</span><span class="n">input_trans</span><span class="p">,</span>
-                         <span class="n">output_trans</span><span class="o">=</span><span class="n">output_trans</span><span class="p">,</span>
-                         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
-                         <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+    <span class="n">wrap</span> <span class="o">=</span> <span class="n">WebObjWrapper</span><span class="p">(</span>
+        <span class="n">obj_constructor</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>  <span class="c1"># wrap this current module</span>
+        <span class="n">obj_constructor_arg_names</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># no construction, so no construction args</span>
+        <span class="n">permissible_attr</span><span class="o">=</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">],</span>
+        <span class="n">input_trans</span><span class="o">=</span><span class="n">input_trans</span><span class="p">,</span>
+        <span class="n">output_trans</span><span class="o">=</span><span class="n">output_trans</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mk_app</span><span class="p">(</span><span class="n">app_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">routes</span><span class="o">=</span><span class="p">[</span><span class="n">wrap</span><span class="p">])</span>
 </pre></div>
