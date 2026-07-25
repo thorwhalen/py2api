@@ -1,0 +1,4 @@
+py2api.examples.wrapping_a_class
+================================
+.. automodule:: py2api.examples.wrapping_a_class
+   :members:

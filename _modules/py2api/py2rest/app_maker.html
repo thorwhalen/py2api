@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>py2api.py2rest.app_maker &mdash; py2api 0.0.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            py2api
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api.html">py2api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/constants.html">py2api.constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/defaults.html">py2api.defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/errors.html">py2api.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/examples/pong.html">py2api.examples.pong</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/examples/streaming_sine.html">py2api.examples.streaming_sine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/examples/wrapping_a_class.html">py2api.examples.wrapping_a_class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/examples/wrapping_a_module.html">py2api.examples.wrapping_a_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/obj_wrap.html">py2api.obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/output_trans.html">py2api.output_trans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest.html">py2api.py2rest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest/app_maker.html">py2api.py2rest.app_maker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest/constants.html">py2api.py2rest.constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest/input_trans.html">py2api.py2rest.input_trans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest/obj_wrap.html">py2api.py2rest.obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/py2rest/rest2py.html">py2api.py2rest.rest2py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/scrap_obj_wrap.html">py2api.scrap_obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/py2api/util.html">py2api.util</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">py2api</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">py2api.py2rest.app_maker</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for py2api.py2rest.app_maker</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Build a Flask app that serves a py2api object wrapper over HTTP.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask_cors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalServerError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">platform</span><span class="w"> </span><span class="kn">import</span> <span class="n">system</span> <span class="k">as</span> <span class="n">this_system</span>
+
+
+<div class="viewcode-block" id="ClientError">
+<a class="viewcode-back" href="../../../module_docs/py2api/py2rest/app_maker.html#py2api.py2rest.app_maker.ClientError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClientError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="k">if</span> <span class="n">status_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">or</span> <span class="p">())</span>
+        <span class="n">rv</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
+        <span class="k">return</span> <span class="n">rv</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">route_wrapper</span><span class="p">(</span><span class="n">route_ow</span><span class="p">,</span> <span class="n">route_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_func</span><span class="p">(</span><span class="o">**</span><span class="n">route_args</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">route_ow</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">route_args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span>  <span class="c1"># if _handle_error didn&#39;t raise anything specific</span>
+
+    <span class="k">if</span> <span class="n">route_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">route_name</span> <span class="o">=</span> <span class="n">route_ow</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">route_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">route_name</span>
+    <span class="k">return</span> <span class="n">route_func</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mk_app</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">routes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">app_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">app_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">app_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">app_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">cors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cors</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">cors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">CORS</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">cors</span><span class="p">)</span>
+
+    <span class="c1"># this_logger = logger.init_logger(name=app_name, tags=[app_name, &#39;api&#39;])</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">InternalServerError</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_internal_server_error</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;General error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;InternalServerError&quot;</span><span class="p">,</span>
+                           <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to perform action: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="c1"># this_logger.exception(&#39;{} InternalServerError default catch: Exception with stack trace!&#39;.format(app_name))</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">ClientError</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_invalid_usage</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="c1"># this_logger.exception(&#39;{} ClientError default catch: Exception with stack trace!&#39;.format(app_name))</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">if</span> <span class="n">routes</span><span class="p">:</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">add_routes_to_app</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">routes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_routes_to_app</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">routes</span><span class="p">):</span>
+    <span class="n">_routes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">route_name</span><span class="p">,</span> <span class="n">route_ow</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">routes</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_wrapper</span><span class="p">(</span><span class="n">route_ow</span><span class="p">,</span> <span class="n">route_name</span><span class="o">=</span><span class="n">route_name</span><span class="p">))</span>
+        <span class="n">routes</span> <span class="o">=</span> <span class="n">_routes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">route_ow</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
+            <span class="n">_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_wrapper</span><span class="p">(</span><span class="n">route_ow</span><span class="p">))</span>
+        <span class="n">routes</span> <span class="o">=</span> <span class="n">_routes</span>
+
+    <span class="k">for</span> <span class="n">route_func</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="n">route_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])(</span><span class="n">route_func</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">dflt_run_app_kwargs</span><span class="p">():</span>
+    <span class="n">dflt_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+    <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span>
+
+    <span class="k">if</span> <span class="n">this_system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">:</span>
+        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dflt_kwargs</span><span class="p">[</span><span class="s1">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">dflt_kwargs</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">py2api.py2rest.obj_wrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebObjWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">py2api.output_trans</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputTrans</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">py2api.py2rest.input_trans</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputTrans</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Struct</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">dispatch_funcs_to_web_app</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="n">input_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;py2api&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">funcs</span><span class="p">):</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">funcs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">input_trans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">input_trans</span> <span class="o">=</span> <span class="n">InputTrans</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">input_trans</span> <span class="o">=</span> <span class="n">InputTrans</span><span class="p">(</span><span class="n">input_trans</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_trans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_trans</span> <span class="o">=</span> <span class="n">OutputTrans</span><span class="p">(</span><span class="n">jsonify</span><span class="p">)</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">func</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">})</span>
+
+    <span class="n">wrap</span> <span class="o">=</span> <span class="n">WebObjWrapper</span><span class="p">(</span><span class="n">obj_constructor</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>  <span class="c1"># wrap this current module</span>
+                         <span class="n">obj_constructor_arg_names</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># no construction, so no construction args</span>
+                         <span class="n">permissible_attr</span><span class="o">=</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">],</span>
+                         <span class="n">input_trans</span><span class="o">=</span><span class="n">input_trans</span><span class="p">,</span>
+                         <span class="n">output_trans</span><span class="o">=</span><span class="n">output_trans</span><span class="p">,</span>
+                         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+                         <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mk_app</span><span class="p">(</span><span class="n">app_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">routes</span><span class="o">=</span><span class="p">[</span><span class="n">wrap</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

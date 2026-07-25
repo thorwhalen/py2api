@@ -1,0 +1,4 @@
+py2api.scrap_obj_wrap
+=====================
+.. automodule:: py2api.scrap_obj_wrap
+   :members:

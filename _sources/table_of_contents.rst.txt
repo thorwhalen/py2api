@@ -1,0 +1,22 @@
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   module_docs/py2api
+   module_docs/py2api/constants
+   module_docs/py2api/defaults
+   module_docs/py2api/errors
+   module_docs/py2api/examples/pong
+   module_docs/py2api/examples/streaming_sine
+   module_docs/py2api/examples/wrapping_a_class
+   module_docs/py2api/examples/wrapping_a_module
+   module_docs/py2api/obj_wrap
+   module_docs/py2api/output_trans
+   module_docs/py2api/py2rest
+   module_docs/py2api/py2rest/app_maker
+   module_docs/py2api/py2rest/constants
+   module_docs/py2api/py2rest/input_trans
+   module_docs/py2api/py2rest/obj_wrap
+   module_docs/py2api/py2rest/rest2py
+   module_docs/py2api/scrap_obj_wrap
+   module_docs/py2api/util

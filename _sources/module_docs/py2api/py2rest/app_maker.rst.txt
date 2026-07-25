@@ -1,0 +1,4 @@
+py2api.py2rest.app_maker
+========================
+.. automodule:: py2api.py2rest.app_maker
+   :members:

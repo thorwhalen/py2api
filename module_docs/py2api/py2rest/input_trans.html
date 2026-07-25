@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>py2api.py2rest.input_trans &mdash; py2api 0.0.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=47de8214"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="py2api.py2rest.obj_wrap" href="obj_wrap.html" />
+    <link rel="prev" title="py2api.py2rest.constants" href="constants.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            py2api
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../py2api.html">py2api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">py2api.constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../defaults.html">py2api.defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../errors.html">py2api.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/pong.html">py2api.examples.pong</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/streaming_sine.html">py2api.examples.streaming_sine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/wrapping_a_class.html">py2api.examples.wrapping_a_class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/wrapping_a_module.html">py2api.examples.wrapping_a_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../obj_wrap.html">py2api.obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_trans.html">py2api.output_trans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../py2rest.html">py2api.py2rest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_maker.html">py2api.py2rest.app_maker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">py2api.py2rest.constants</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">py2api.py2rest.input_trans</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#py2api.py2rest.input_trans.InputTrans"><code class="docutils literal notranslate"><span class="pre">InputTrans</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#py2api.py2rest.input_trans.InputTransWithAttrInURL"><code class="docutils literal notranslate"><span class="pre">InputTransWithAttrInURL</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="obj_wrap.html">py2api.py2rest.obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest2py.html">py2api.py2rest.rest2py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scrap_obj_wrap.html">py2api.scrap_obj_wrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../util.html">py2api.util</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">py2api</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">py2api.py2rest.input_trans</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/module_docs/py2api/py2rest/input_trans.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-py2api.py2rest.input_trans">
+<span id="py2api-py2rest-input-trans"></span><h1>py2api.py2rest.input_trans<a class="headerlink" href="#module-py2api.py2rest.input_trans" title="Link to this heading"></a></h1>
+<p>Input transformation for the REST layer: parse request arguments into the
+Python call arguments expected by the wrapped object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="py2api.py2rest.input_trans.InputTrans">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">py2api.py2rest.input_trans.</span></span><span class="sig-name descname"><span class="pre">InputTrans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dflt_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('_json',</span> <span class="pre">'_args',</span> <span class="pre">'_route')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/py2api/py2rest/input_trans.html#InputTrans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#py2api.py2rest.input_trans.InputTrans" title="Link to this definition"></a></dt>
+<dd><p>InputTrans allows to flexibly define a callable object to convert arguments into the types expected by the
+attribute that will be called.</p>
+<p>The objective is to transform a flask request into a dict that contains arguments that can be understood by the
+function or method the attribute points to. Therefore it does two things:
+(1) Collect argument names and values from the request object
+(2) Transform/convert/cast the argument values to values the function or method expects
+(3) Adding arguments that haven’t been specified, along with default values</p>
+<dl class="simple">
+<dt>Everything is defined by a trans_spec parameter, which is either</dt><dd><ul class="simple">
+<li><p>a callable (converter function that will be applied to an argument value), or</p></li>
+<li><dl class="simple">
+<dt>a dict with one or more of the following fields:</dt><dd><p>‘_source’: {source: trans_spec, …} dict,
+‘_attr’: {attr: trans_spec} dict
+‘_argname’: {argname: trans_spec, …} dict,
+‘_else’: trans_spec</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>See that this specification language is defined recursively since every trans_spec mentioned above could be itself
+a callable or a trans_spec dict.</p>
+<p>The way it works is that when we ask for the {arg: val, …} data for a given (attr, request) pair, for each
+(source, attr, argname, val) tuple extracted from request (where source denotes where the data was extracted (e.g.
+from request.args or request.json)), we look for a match in a depth-first search in the trans_spec, in the order
+specified above. That is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>We first look to see if there’s any particular instructions for the source in question, if we find nothing…</p></li>
+<li><p>we see if the attr is mentioned in the _attr keys, and if we find nothing…</p></li>
+<li><p>we see if the argument name is mentioned in the _argname keys, and if we find nothing…</p></li>
+<li><p>we see if the type of val is mentioned in the _valtype keys (using isinstance(val, valtype), and if not…</p></li>
+<li><p>if there’s an else, we look in there, and if there was no else, or still didn’t find anything</p></li>
+<li><p>we don’t convert the argument’s value at all.</p></li>
+</ul>
+</div></blockquote>
+<p>By “find nothing”, we mean “find a callable”.</p>
+<p>Note that you only need to specify those cases that need special treatment. For example, if your attr (function)
+expects a string argument, and your request represents this argument as a string (which is always the case if
+it’s in the url), then there is no need to mention that argument at all.</p>
+<p>Further, if you use the same argument name and type to represent the same “thing”, no matter what the attribute
+(which, by the way, is good practice), then you only need to specify an _argname: trans_func once (unless the
+type of the argument will be different according to the source (e.g. url query (args) or json payload).</p>
+<p>Other important note: The top level _valtype and _else were included for consistency and completeness,
+but rare are the cases that they’d actually be included in the specification, and if used, should be used with care.
+An _else at the top level will result in all arguments that were not resolved by _attr, _argname, or _valtype, to be
+cast to the same single type.
+Similarly, a _valtype at the top level will result in all arguments that were not resolved by _attr or _argname to
+be cast a type that is only conditioned by the VALTYPE of the argument.</p>
+<dl class="simple">
+<dt>Additionally, the class provides two other parameters:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>dflt_spec: A {attr: {argname: val, …}, …} dict that allows us to overwrite the functions defaults, or</dt><dd><p>include defaults that are not even in the function.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sources: A tuple of sources that InputTrans should extract from the request, and in which order. This is</dt><dd><dl class="simple">
+<dt>might be used to force only specific sources to be used, or which sources should have the priority.</dt><dd><p>For priority, the last source mentioned has priority. That is, if sources=(‘_json’, ‘_args’), which is the
+default, this means that if an argument is mentioned both in request.json and request.args, it is the
+one in request.args that will be taken.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_qsl</span><span class="p">,</span> <span class="n">urlsplit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MockRequest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># a class to mockup a web service request</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">json</span> <span class="o">=</span> <span class="n">json</span> <span class="ow">or</span> <span class="p">{}</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">parse_qsl</span><span class="p">(</span><span class="n">urlsplit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Most of the time, all you&#39;ll need is to specify the argnames that need to be converted, plus what ever</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># exceptions to this you might have (usually, if the conversion depends on the attribute name).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trans_spec</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="n">_ARGNAME</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>  <span class="c1"># all g should be converted to float (unless... see _ATTR specification)</span>
+<span class="gp">... </span>        <span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>  <span class="c1"># all pi arguments should be converted to int</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="n">_ATTR</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;special_attr&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="n">_ARGNAME</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>                <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>  <span class="c1"># if g is an argument of the special_attr function, it should be converted to list</span>
+<span class="gp">... </span>                <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span>  <span class="c1"># e argument of special_attr function should be converted to a set</span>
+<span class="gp">... </span>            <span class="p">}</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">},</span>  <span class="c1"># And that&#39;s all. All other arguments should be left alone.</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_trans</span> <span class="o">=</span> <span class="n">InputTrans</span><span class="p">(</span><span class="n">trans_spec</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;?attr=any_attr&amp;g=1.61&amp;e=2.17&amp;pi=3.14&amp;x=something_else&#39;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;any_attr&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="mf">1.61</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="s1">&#39;2.17&#39;</span><span class="p">,</span> <span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;something_else&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">input_trans</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">MockRequest</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># (&#39;any_attr&#39;, {&#39;g&#39;: 1.61, &#39;e&#39;: &#39;2.17&#39;, &#39;pi&#39;: 3, &#39;x&#39;: &#39;something_else&#39;})</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;?attr=special_attr&amp;g=1.61&amp;e=2.17&amp;pi=3.14&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;special_attr&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">],</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">},</span> <span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">input_trans</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#(&#39;special_attr&#39;, {&#39;g&#39;: [&#39;1&#39;, &#39;.&#39;, &#39;6&#39;, &#39;1&#39;], &#39;e&#39;: {&#39;7&#39;, &#39;2&#39;, &#39;1&#39;, &#39;.&#39;}, &#39;pi&#39;: 3})</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">####### And now, a more complicated example #############</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The following more complicated example demonstrates how one can</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#   * condition the conversion on the source (whether it&#39;s from request.args (url query) or request.json)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#   * condition the conversion on the val type, nested within another condition, or not</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">test_item</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">attr</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">input_trans</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Testing with </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">kwargs</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trans_spec</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="n">_ATTR</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;special_attr&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="n">_ARGNAME</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>                <span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="gp">... </span>            <span class="p">}</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="n">_ARGNAME</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="n">_SOURCE</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>                <span class="n">_ARGS</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">))</span>
+<span class="gp">... </span>            <span class="p">},</span>
+<span class="gp">... </span>            <span class="n">_ELSE</span><span class="p">:</span> <span class="nb">tuple</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;int_1&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="nb">float</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_trans</span> <span class="o">=</span> <span class="n">InputTrans</span><span class="p">(</span><span class="n">trans_spec</span><span class="o">=</span><span class="n">trans_spec</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;tuple&#39;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;?attr=special_attr&amp;int_1=34&amp;float_1=3.14159&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">got</span> <span class="o">=</span> <span class="n">test_item</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+<span class="go">Testing with special_attr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="s2">&quot;[&#39;should&#39;, &#39;become&#39;, &#39;set&#39;]&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="s1">&#39;should|become|tuple&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;int_1&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">got</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;?attr=any_attr&amp;int_1=34&amp;float_1=3.14159&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">got</span> <span class="o">=</span> <span class="n">test_item</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+<span class="go">Testing with any_attr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;tuple&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s1">&#39;int_1&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="mf">3.14159</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">got</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">url</span><span class="o">=</span><span class="s1">&#39;?attr=any_attr&amp;float_1=3.14159&amp;list_2=should|become|tuple&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s1">&#39;other_arg&#39;</span><span class="p">:</span> <span class="s1">&#39;another arg&#39;</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">got</span> <span class="o">=</span> <span class="n">test_item</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+<span class="go">Testing with any_attr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;other_arg&#39;</span><span class="p">:</span> <span class="s1">&#39;another arg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="mf">3.14159</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;tuple&#39;</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">got</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">url</span><span class="o">=</span><span class="s1">&#39;?attr=any_attr&amp;int_1=34&amp;float_1=2.71&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;tuple&#39;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s1">&#39;other_arg&#39;</span><span class="p">:</span> <span class="s1">&#39;another arg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="mf">3.14159</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">got</span> <span class="o">=</span> <span class="n">test_item</span><span class="p">(</span><span class="n">input_trans</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+<span class="go">Testing with any_attr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;list_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;list_2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">,</span> <span class="s1">&#39;become&#39;</span><span class="p">,</span> <span class="s1">&#39;tuple&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="s1">&#39;other_arg&#39;</span><span class="p">:</span> <span class="s1">&#39;another arg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;float_1&#39;</span><span class="p">:</span> <span class="mf">2.71</span><span class="p">,</span> <span class="s1">&#39;int_1&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">got</span> <span class="o">==</span> <span class="n">expected</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="py2api.py2rest.input_trans.InputTransWithAttrInURL">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">py2api.py2rest.input_trans.</span></span><span class="sig-name descname"><span class="pre">InputTransWithAttrInURL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dflt_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('_json',</span> <span class="pre">'_args',</span> <span class="pre">'_route')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_from_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'(\\w+)$'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/py2api/py2rest/input_trans.html#InputTransWithAttrInURL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#py2api.py2rest.input_trans.InputTransWithAttrInURL" title="Link to this definition"></a></dt>
+<dd><p>Version of (py2rest) InputTrans that gets its attr from the url itself.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="constants.html" class="btn btn-neutral float-left" title="py2api.py2rest.constants" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="obj_wrap.html" class="btn btn-neutral float-right" title="py2api.py2rest.obj_wrap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

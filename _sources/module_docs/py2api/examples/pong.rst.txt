@@ -1,0 +1,4 @@
+py2api.examples.pong
+====================
+.. automodule:: py2api.examples.pong
+   :members:

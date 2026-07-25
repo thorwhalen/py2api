@@ -1,0 +1,4 @@
+py2api.examples.streaming_sine
+==============================
+.. automodule:: py2api.examples.streaming_sine
+   :members:
