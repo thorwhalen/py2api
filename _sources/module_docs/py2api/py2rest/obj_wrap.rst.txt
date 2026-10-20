@@ -1,4 +1,0 @@
-py2api.py2rest.obj_wrap
-=======================
-.. automodule:: py2api.py2rest.obj_wrap
-   :members:

@@ -1,0 +1,19 @@
+py2api.py2rest.input\_trans
+===========================
+
+.. automodule:: py2api.py2rest.input_trans
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_request_data_from_source
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      InputTrans
+      InputTransWithAttrInURL
+   

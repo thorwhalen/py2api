@@ -1,0 +1,20 @@
+﻿py2api
+======
+
+.. automodule:: py2api
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   constants
+   defaults
+   errors
+   obj_wrap
+   output_trans
+   py2rest
+   scrap_obj_wrap
+   util

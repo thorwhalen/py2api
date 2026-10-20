@@ -1,0 +1,12 @@
+py2api.obj\_wrap
+================
+
+.. automodule:: py2api.obj_wrap
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ObjWrap
+   

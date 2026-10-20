@@ -1,0 +1,12 @@
+py2api.py2rest.obj\_wrap
+========================
+
+.. automodule:: py2api.py2rest.obj_wrap
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      WebObjWrapper
+   

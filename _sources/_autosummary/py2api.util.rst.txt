@@ -1,0 +1,23 @@
+py2api.util
+===========
+
+.. automodule:: py2api.util
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      argname_based_specs_from
+      default_to_jdict
+      enhanced_docstr
+      get_attr_recursively
+      get_pattern_from_attr_permissions_dict
+      obj_str_from_obj
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PermissibleAttr
+   

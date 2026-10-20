@@ -1,0 +1,24 @@
+# py2api
+
+> Declarative API entry point
+
+
+## Pages in this subsection
+
+- [py2api](py2api.html.md): py2api: declarative construction of web-service APIs from Python objects.
+- [py2api.constants](py2api.constants.html.md): Shared constant names and sentinel values used across py2api.
+- [py2api.defaults](py2api.defaults.html.md): Default values used across py2api.
+- [py2api.errors](py2api.errors.html.md): Exception types raised by py2api wrappers (client/attribute-access errors).
+- [py2api.obj_wrap](py2api.obj_wrap.html.md): Base module to wrap a “controller” class for a web service REST API.
+- [py2api.output_trans](py2api.output_trans.html.md): Output transformation: build callables that convert the output of wrapped
+- [py2api.py2rest](py2api.py2rest.html.md): REST layer for py2api: wrap objects and modules behind a Flask web service.
+- [py2api.py2rest.app_maker](py2api.py2rest.app_maker.html.md): Build a Flask app that serves a py2api object wrapper over HTTP.
+- [py2api.py2rest.constants](py2api.py2rest.constants.html.md): Constant names used by the py2api REST layer.
+- [py2api.py2rest.input_trans](py2api.py2rest.input_trans.html.md): Input transformation for the REST layer: parse request arguments into the
+- [py2api.py2rest.obj_wrap](py2api.py2rest.obj_wrap.html.md): Web-facing object wrapper (adds LRU caching) for the REST layer.
+- [py2api.py2rest.rest2py](py2api.py2rest.rest2py.html.md): Client helpers to call a py2api REST service from Python.
+- [py2api.util](py2api.util.html.md): Utilities for py2api: attribute-permission filters, docstring enhancement,
+
+## Optional
+
+- [Top-level llms.txt](../llms.txt): Complete documentation index.

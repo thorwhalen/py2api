@@ -1,0 +1,12 @@
+py2api.constants
+================
+
+.. automodule:: py2api.constants
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TransNotFound
+   

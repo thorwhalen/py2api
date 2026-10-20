@@ -1,0 +1,17 @@
+py2api.errors
+=============
+
+.. automodule:: py2api.errors
+
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      BadRequest
+      ClientError
+      Forbidden
+      ForbiddenAttribute
+      ForbiddenProperty
+      MissingAttribute
+   

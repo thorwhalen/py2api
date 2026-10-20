@@ -1,0 +1,17 @@
+py2api.py2rest
+==============
+
+.. automodule:: py2api.py2rest
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   app_maker
+   constants
+   input_trans
+   obj_wrap
+   rest2py

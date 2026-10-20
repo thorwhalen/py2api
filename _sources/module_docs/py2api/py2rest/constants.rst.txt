@@ -1,4 +1,0 @@
-py2api.py2rest.constants
-========================
-.. automodule:: py2api.py2rest.constants
-   :members:

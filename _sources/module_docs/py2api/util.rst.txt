@@ -1,4 +1,0 @@
-py2api.util
-===========
-.. automodule:: py2api.util
-   :members:

@@ -1,4 +1,0 @@
-py2api.errors
-=============
-.. automodule:: py2api.errors
-   :members:

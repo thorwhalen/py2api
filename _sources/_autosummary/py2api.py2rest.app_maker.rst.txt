@@ -1,0 +1,28 @@
+py2api.py2rest.app\_maker
+=========================
+
+.. automodule:: py2api.py2rest.app_maker
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      add_routes_to_app
+      dflt_run_app_kwargs
+      dispatch_funcs_to_web_app
+      mk_app
+      route_wrapper
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Struct
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      ClientError
+   
