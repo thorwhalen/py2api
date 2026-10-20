@@ -304,8 +304,9 @@ class InputTrans:
                 #     return trans_func
 
                 ############### _ELSE ###############
+                # Only a fallback: a match found above (source, attr or argname) wins.
                 _trans_spec = trans_spec.get(_ELSE, TRANS_NOT_FOUND)
-                if _trans_spec:
+                if trans_func is TRANS_NOT_FOUND and _trans_spec:
                     trans_func = self.search_trans_func(
                         attr, argname, val, trans_spec=_trans_spec, source=source
                     )
